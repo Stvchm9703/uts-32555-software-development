@@ -7,6 +7,8 @@ services:
       dockerfile: ./deploy/Dockerfile
     image: yummy_pizza_api_service:${YUMMY_PIZZA_API_SERVICE_VERSION:-latest}
     restart: always
+    ports: 
+    - 8000:8000
     env_file:
     - .env
     depends_on:
@@ -19,6 +21,7 @@ services:
       YUMMY_PIZZA_API_SERVICE_DB_USER: yummy_pizza_api_service
       YUMMY_PIZZA_API_SERVICE_DB_PASS: yummy_pizza_api_service
       YUMMY_PIZZA_API_SERVICE_DB_BASE: yummy_pizza_api_service
+      
 
   db:
     image: postgres:13.8-bullseye
@@ -35,6 +38,8 @@ services:
       interval: 2s
       timeout: 3s
       retries: 40
+    ports: 
+    - 5432:5432
 
   migrator:
     image: yummy_pizza_api_service:${YUMMY_PIZZA_API_SERVICE_VERSION:-latest}
