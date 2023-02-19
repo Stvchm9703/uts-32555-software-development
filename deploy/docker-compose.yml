@@ -1,0 +1,57 @@
+version: '3.9'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: ./deploy/Dockerfile
+    image: yummy_pizza_api_service:${YUMMY_PIZZA_API_SERVICE_VERSION:-latest}
+    restart: always
+    env_file:
+    - .env
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      YUMMY_PIZZA_API_SERVICE_HOST: 0.0.0.0
+      YUMMY_PIZZA_API_SERVICE_DB_HOST: yummy_pizza_api_service-db
+      YUMMY_PIZZA_API_SERVICE_DB_PORT: 5432
+      YUMMY_PIZZA_API_SERVICE_DB_USER: yummy_pizza_api_service
+      YUMMY_PIZZA_API_SERVICE_DB_PASS: yummy_pizza_api_service
+      YUMMY_PIZZA_API_SERVICE_DB_BASE: yummy_pizza_api_service
+
+  db:
+    image: postgres:13.8-bullseye
+    hostname: yummy_pizza_api_service-db
+    environment:
+      POSTGRES_PASSWORD: "yummy_pizza_api_service"
+      POSTGRES_USER: "yummy_pizza_api_service"
+      POSTGRES_DB: "yummy_pizza_api_service"
+    volumes:
+    - yummy_pizza_api_service-db-data:/var/lib/postgresql/data
+    restart: always
+    healthcheck:
+      test: pg_isready -U yummy_pizza_api_service
+      interval: 2s
+      timeout: 3s
+      retries: 40
+
+  migrator:
+    image: yummy_pizza_api_service:${YUMMY_PIZZA_API_SERVICE_VERSION:-latest}
+    restart: "no"
+    command: aerich upgrade
+    environment:
+      YUMMY_PIZZA_API_SERVICE_DB_HOST: yummy_pizza_api_service-db
+      YUMMY_PIZZA_API_SERVICE_DB_PORT: 5432
+      YUMMY_PIZZA_API_SERVICE_DB_USER: yummy_pizza_api_service
+      YUMMY_PIZZA_API_SERVICE_DB_PASS: yummy_pizza_api_service
+      YUMMY_PIZZA_API_SERVICE_DB_BASE: yummy_pizza_api_service
+    depends_on:
+      db:
+        condition: service_healthy
+
+
+
+volumes:
+  yummy_pizza_api_service-db-data:
+    name: yummy_pizza_api_service-db-data
