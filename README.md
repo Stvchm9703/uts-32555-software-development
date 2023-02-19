@@ -170,3 +170,14 @@ docker run -p "5432:5432" -e "POSTGRES_PASSWORD=yummy_pizza_api_service" -e "POS
 ```bash
 pytest -vv .
 ```
+
+
+
+# Develop 
+> referance 
+
+## ORM / DBO design
+https://tortoise.github.io/getting_started.html
+
+## FastAPI Doc
+https://fastapi.tiangolo.com/tutorial/extra-models
