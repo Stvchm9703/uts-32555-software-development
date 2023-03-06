@@ -1,14 +1,15 @@
 build: 
-	docker compose -f ./deploy/docker-compose.yml --project-directory ./ build
+	docker-compose -f deploy/docker-compose.yml --project-directory . up --build
 
 run:
-	docker compose -f ./deploy/docker-compose.yml --project-directory ./ run --rm -it -p 8000:8000 api
+	docker-compose -f deploy/docker-compose.yml -f deploy/docker-compose.dev.yml --project-directory . up
 	
-run-test: 
-	docker compose -f ./deploy/docker-compose.yml --project-directory ./ run --rm -it -p 8000:8000 api pytest -vv .
+test: 
+	docker-compose -f deploy/docker-compose.yml --project-directory . run --rm api pytest -vv .
+	docker-compose -f deploy/docker-compose.yml --project-directory . down
 
 run-test-cov:
-	docker compose -f ./deploy/docker-compose.yml --project-directory ./ run --rm -it -p 8000:8000 api pytest -vv . --cov=yummy_pizza
+	docker compose -f ./deploy/docker-compose.yml --project-directory . run --rm -it api pytest -vv . --cov=yummy_pizza
 
 up: 
 	docker compose -f ./deploy/docker-compose.yml --project-directory ./ up
