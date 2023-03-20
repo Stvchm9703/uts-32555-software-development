@@ -13,3 +13,7 @@ run-test-cov:
 
 up: 
 	docker compose -f ./deploy/docker-compose.yml --project-directory ./ up
+
+
+generate-class-diagram:
+	pyreverse -ASmy -o=mmd  yummy_pizza_api_service/db/dummy_class
