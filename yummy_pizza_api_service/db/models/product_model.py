@@ -39,11 +39,12 @@ class ProductModel(base_model.BaseModel):
     def __str__(self) -> str:
         return "product:" + self.id
 
-    @property
-    def full_price_value(self):
+    # @property
+    def get_full_price_value(self) -> float:
         return self.price_value * (1 + RATE)
 
-    @property
-    async def cost_price_value(self):
-        await self.fetch_related('require_items')
+    # @property
+    async def get_cost_price_value(self) -> float:
+        # await self.fetch_related('require_items')
+        await self.require_items.all()
         return reduce((lambda x, y: x.cost + y), self.require_items)
