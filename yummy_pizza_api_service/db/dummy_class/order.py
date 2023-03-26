@@ -4,23 +4,25 @@ from functools import reduce
 from enum import Enum
 
 
-class OrderType(Enum):
-    walk_in = 0
-    phone_in = 1
-    online_system = 2
+class OrderType(str, Enum):
+    walk_in = "walk_in"
+    phone_in = "phone_in"
+    online_system = "online_system"
 
-class OrderStatus(Enum):
-    created = 0
-    void = -1
-    paid = 1
-    unpaid = 2
-    delivering = 3
-    completed = 4
 
-class OrderDeliveryType(Enum):
-    dine_in = 0 
-    take_away = 1
-    remote_delivery = 2
+class OrderStatus(str, Enum):
+    created = "created"
+    void = "void"
+    paid = "paid"
+    unpaid = "unpaid"
+    delivering = "delivering"
+    completed = "completed"
+
+
+class OrderDeliveryType(str, Enum):
+    dine_in = "dine_in"
+    take_away = "take_away"
+    remote_delivery = "remote_delivery"
 
 
 class Order():
@@ -60,16 +62,27 @@ class Order():
         else:
             return 0.0
 
-    def add_item(self, item):
+    def add_items(self, item: OrderProduct) -> bool:
+        if item.base_referance == None:
+            return False
+        if item.quality == 0 or item.base_referance.is_available == False or item.base_referance.is_available == False:
+            return False
+
         self.items.append(item)
         return True
-    
+
+    def edit_item(self, edited_item: OrderProduct = None) -> bool:
+
+        return True
+
+    def remove_item(self, target_item: OrderProduct = None) -> bool:
+        return True
+
     def request_payment(self) -> bool:
         return
-    
+
     def print_as_receipt(self) -> str:
-        return 
+        return ""
 
-    def __init__(self, ) -> None:
-
-        pass
+    def snapshot(self) -> bool:
+        return False

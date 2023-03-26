@@ -9,3 +9,4 @@ class BaseMeta(ModelMeta):
 
     database = database
     metadata = meta
+    

@@ -20,3 +20,7 @@ class Product():
         return self.price_value * (1 + self.rate) + reduce(
             (lambda x, y: x.extra_charge + y), self.addication_extra_options
         )
+
+    @property
+    def is_available(self) -> bool:
+        return True
