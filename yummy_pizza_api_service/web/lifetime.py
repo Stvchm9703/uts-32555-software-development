@@ -15,6 +15,8 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.trace import set_tracer_provider
 
 from yummy_pizza_api_service.settings import settings
+from yummy_pizza_api_service.db.config import database
+from yummy_pizza_api_service.services.redis.lifetime import init_redis, shutdown_redis
 
 
 def setup_opentelemetry(app: FastAPI) -> None:  # pragma: no cover
@@ -94,6 +96,8 @@ def register_startup_event(
     @app.on_event("startup")
     async def _startup() -> None:  # noqa: WPS430
         setup_opentelemetry(app)
+        await database.connect()
+        init_redis(app)
         pass  # noqa: WPS420
 
     return _startup
@@ -111,6 +115,8 @@ def register_shutdown_event(
 
     @app.on_event("shutdown")
     async def _shutdown() -> None:  # noqa: WPS430
+        await database.disconnect()
+        await shutdown_redis(app)
         stop_opentelemetry(app)
         pass  # noqa: WPS420
 

@@ -12,7 +12,7 @@ class DummyDAO:
 
         :param name: name of a dummy.
         """
-        await DummyModel.create(name=name)
+        await DummyModel.objects.create(name=name)
 
     async def get_all_dummies(self, limit: int, offset: int) -> List[DummyModel]:
         """
@@ -22,16 +22,19 @@ class DummyDAO:
         :param offset: offset of dummies.
         :return: stream of dummies.
         """
-        return await DummyModel.all().offset(offset).limit(limit)
+        return await DummyModel.objects.limit(limit).offset(offset).all()
 
-    async def filter(self, name: Optional[str] = None) -> List[DummyModel]:
+    async def filter(
+        self,
+        name: Optional[str] = None,
+    ) -> List[DummyModel]:
         """
         Get specific dummy model.
 
         :param name: name of dummy instance.
         :return: dummy models.
         """
-        query = DummyModel.all()
+        query = DummyModel.objects
         if name:
-            query = query.filter(name=name)
-        return await query
+            query = query.filter(DummyModel.name == name)
+        return await query.all()

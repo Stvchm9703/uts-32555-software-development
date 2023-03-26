@@ -17,11 +17,14 @@ uvicorn = { version = "^0.20.0", extras = ["standard"] }
 pydantic = {version = "^1.10.4", extras = ["dotenv"]}
 yarl = "^1.8.2"
 ujson = "^5.7.0"
-tortoise-orm = "^0.19.2"
-aerich = "^0.7.1"
+ormar = "^0.12.0"
+alembic = "^1.9.2"
 asyncpg = "^0.27.0"
+psycopg2-binary = "^2.9.5"
+redis = {version = "^4.4.2", extras = ["hiredis"]}
 aiofiles = "^22.1.0"
 httptools = "^0.5.0"
+strawberry-graphql = { version = "^0.155.2", extras = ["fastapi"] }
 sentry-sdk = "^1.14.0"
 opentelemetry-api = "^1.15.0"
 opentelemetry-sdk = "^1.15.0"
@@ -45,6 +48,7 @@ anyio = "^3.6.2"
 pytest-env = "^0.8.1"
 asynctest = "^0.13.0"
 nest-asyncio = "^1.5.6"
+fakeredis = "^2.5.0"
 httpx = "^0.23.3"
 
 [tool.isort]
@@ -64,6 +68,13 @@ allow_untyped_decorators = true
 warn_unused_ignores = false
 warn_return_any = false
 namespace_packages = true
+
+
+[[tool.mypy.overrides]]
+module = [
+    'redis.asyncio'
+]
+ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 filterwarnings = [

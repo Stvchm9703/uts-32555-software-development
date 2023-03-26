@@ -44,7 +44,7 @@ services:
   migrator:
     image: yummy_pizza_api_service:${YUMMY_PIZZA_API_SERVICE_VERSION:-latest}
     restart: "no"
-    command: aerich upgrade
+    command: alembic upgrade head
     environment:
       YUMMY_PIZZA_API_SERVICE_DB_HOST: yummy_pizza_api_service-db
       YUMMY_PIZZA_API_SERVICE_DB_PORT: 5432
@@ -55,7 +55,17 @@ services:
       db:
         condition: service_healthy
 
-
+  redis:
+    image: bitnami/redis:6.2.5
+    hostname: "yummy_pizza_api_service-redis"
+    restart: always
+    environment:
+      ALLOW_EMPTY_PASSWORD: "yes"
+    healthcheck:
+      test: redis-cli ping
+      interval: 1s
+      timeout: 3s
+      retries: 50
 
 volumes:
   yummy_pizza_api_service-db-data:

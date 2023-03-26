@@ -10,7 +10,7 @@ RUN pip install poetry==1.2.2
 RUN poetry config virtualenvs.create false
 
 # Copying requirements of a project
-COPY pyproject.toml poetry.lock /app/src/
+COPY pyproject.toml poetry.lock alembic.ini /app/src/
 WORKDIR /app/src
 
 # Installing requirements

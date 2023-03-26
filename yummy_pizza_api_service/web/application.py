@@ -8,12 +8,13 @@ from fastapi.responses import UJSONResponse
 from fastapi.staticfiles import StaticFiles
 from sentry_sdk.integrations.fastapi import FastApiIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
-from tortoise.contrib.fastapi import register_tortoise
+# from tortoise.contrib.fastapi import register_tortoise
 
-from yummy_pizza_api_service.db.config import TORTOISE_CONFIG
+# from yummy_pizza_api_service.db.config import TORTOISE_CONFIG
 from yummy_pizza_api_service.logging import configure_logging
 from yummy_pizza_api_service.settings import settings
 from yummy_pizza_api_service.web.api.router import api_router
+from yummy_pizza_api_service.web.gql.router import gql_router
 from yummy_pizza_api_service.web.lifetime import (
     register_shutdown_event,
     register_startup_event,
@@ -62,6 +63,7 @@ def get_app() -> FastAPI:
 
     # Main router for the API.
     app.include_router(router=api_router, prefix="/api")
+    app.include_router(router=gql_router, prefix="/graphql")
     # Adds static directory.
     # This directory is used to access swagger files.
     app.mount(
@@ -70,11 +72,11 @@ def get_app() -> FastAPI:
         name="static",
     )
 
-    # Configures tortoise orm.
-    register_tortoise(
-        app,
-        config=TORTOISE_CONFIG,
-        add_exception_handlers=True,
-    )
+    # # Configures tortoise orm.
+    # register_tortoise(
+    #     app,
+    #     config=TORTOISE_CONFIG,
+    #     add_exception_handlers=True,
+    # )
 
     return app
