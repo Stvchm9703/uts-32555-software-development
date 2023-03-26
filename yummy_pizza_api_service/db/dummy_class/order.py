@@ -1,17 +1,36 @@
 from order_product import OrderProduct
 from transaction import Transaction
 from functools import reduce
+from enum import Enum
+
+
+class OrderType(Enum):
+    walk_in = 0
+    phone_in = 1
+    online_system = 2
+
+class OrderStatus(Enum):
+    created = 0
+    void = -1
+    paid = 1
+    unpaid = 2
+    delivering = 3
+    completed = 4
+
+class OrderDeliveryType(Enum):
+    dine_in = 0 
+    take_away = 1
+    remote_delivery = 2
+
 
 class Order():
 
-    # order type : ["walk-in" , "phone-in", "online-system"]
-    order_type: str = ""
+    order_type: OrderType = OrderType.walk_in
 
-    # order status : ["created", "void" , "payed" , "unpay" , "delivering" , "completed"]
-    order_status: str = ""
+    order_status: OrderStatus = OrderStatus.created
 
     # deliver type: ["dine-in" , "remote-delivery"]
-    deliver_type: str = ""
+    deliver_type: OrderDeliveryType = OrderDeliveryType.dine_in
 
     customer_name: str = ""
     customer_contact: int = 0
