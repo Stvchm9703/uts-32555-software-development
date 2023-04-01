@@ -8,5 +8,5 @@ class TableAppointment():
     customer_address: str = ""
     people_count: int = 0
     timeslot : datetime = datetime.now
-    transection: Transaction = None
+    pre_paid: Transaction = None
 

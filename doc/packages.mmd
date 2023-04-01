@@ -1,0 +1,23 @@
+classDiagram
+  class dummy_class {
+  }
+  class base_model {
+  }
+  class order {
+  }
+  class order_product {
+  }
+  class product {
+  }
+  class product_option {
+  }
+  class table_appointment {
+  }
+  class transaction {
+  }
+  order --> order_product
+  order --> transaction
+  order_product --> product
+  order_product --> product_option
+  product --> product_option
+  table_appointment --> transaction

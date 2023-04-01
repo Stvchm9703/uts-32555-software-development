@@ -1,0 +1,60 @@
+classDiagram
+  class Order {
+    customer_address : str
+    customer_contact : int
+    customer_name
+    customer_name : str
+    deliver_type : str
+    order_number : int
+    order_status : str
+    order_type : str
+    staff : str
+    items "0" --> "*" [OrderProduct] : Contain 
+    transection : Optional[Transaction]
+    values
+    + print_as_kitchan_order() str
+    + print_as_receipt() str
+    + request_payment() Transaction
+    ~ snapshot() bool
+    + add_items(item: OrderProduct) bool
+    + update_item(edited_item: OrderProduct) bool
+    + remove_item(target_item: OrderProduct) bool
+  }
+  class OrderProduct {
+    base_referance : Optional[Product]
+    extra_options : list[ProductOption]
+    quality : int
+    total_charge() float
+  }
+  class Product {
+    addication_extra_options : list[ProductOption]
+    full_price_value
+    item_type : str
+    kal : int
+    name : str
+    price_value : float
+    rate : float
+    is_available() bool
+  }
+  class ProductOption {
+    extra_charge : float
+    max_count : int
+    min_count : int
+    name : str
+    option_kind : str
+  }
+  class TableAppointment {
+    customer_address : str
+    customer_contact : int
+    customer_name : str
+    people_count : int
+    pre_paid : Optional[Transaction]
+    timeslot : datetime
+  }
+  class Transaction {
+    payment_status : str
+    payment_type : str
+    transaction_date : datetime
+    value
+    request_payment(t_payment_type: PaymentType) bool
+  }

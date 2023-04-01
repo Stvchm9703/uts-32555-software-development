@@ -12,8 +12,8 @@ class Product():
     rate: float = 0.0
     addication_extra_options: list[ProductOption] = []
 
-    def __str__(self) -> str:
-        return "product:" + self.id
+    # def __str__(self) -> str:
+    #     return "product:" + self.id
 
     @property
     def full_price_value(self) -> float:
@@ -21,6 +21,10 @@ class Product():
             (lambda x, y: x.extra_charge + y), self.addication_extra_options
         )
 
-    @property
+    
     def is_available(self) -> bool:
+        """
+        to check the inventory have enough raw material items
+        for the inventory system, it may use 
+        """
         return True

@@ -1,0 +1,47 @@
+
+from typing import List, Optional
+from functools import reduce
+from datetime import datetime
+from enum import Enum
+import ormar
+from yummy_pizza_api_service.db.base import BaseMeta, BaseModel
+
+
+class TransactionStatus(Enum):
+    unpaid = "unpaid"
+    paid = "paid"
+    fail_paid = "fail_paid"
+    unknown = "unknown"
+
+
+class PaymentType(Enum):
+    cash = "cash"
+    yedpay = "yedpay"
+    paypel = "paypel"
+
+
+class TransactionModel(BaseModel):
+    transaction_date: datetime = ormar.DateTime()
+    payment_type: str = ormar.String(choices=list(PaymentType))
+    payment_status: str = ormar.String(choices=list(TransactionStatus))
+    value: float = ormar.Float()
+    transaction_reference: str = ormar.String(max_length=200)
+    remark: str = ormar.String(max_length=500)
+
+    class Meta(BaseMeta):
+        tablename = "transaction"
+
+    def request_payment(self, t_payment_type: PaymentType = PaymentType.cash) -> bool:
+        # self.payment_type = t_payment_type
+        # if t_payment_type == PaymentType.cash:
+        #     self.payment_status = TransactionStatus.paid
+        #     return True
+        # if t_payment_type == PaymentType.yedpay:
+        #     try:
+        #         self.payment_status = TransactionStatus.paid
+        #         return True
+        #     except:
+        #         self.payment_status = TransactionStatus.unpaid
+        #         return False
+        # self.payment_status = TransactionStatus.unknown
+        return False
