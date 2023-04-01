@@ -20,10 +20,12 @@ class PaymentType(Enum):
     paypel = "paypel"
 
 
-class TransactionModel(BaseModel):
+class Transaction(BaseModel):
+    __table_args__ = {'extend_existing': True}
+    
     transaction_date: datetime = ormar.DateTime()
-    payment_type: str = ormar.String(choices=list(PaymentType))
-    payment_status: str = ormar.String(choices=list(TransactionStatus))
+    payment_type: str = ormar.String(max_length=200, choices=list(PaymentType))
+    payment_status: str = ormar.String(max_length=200, choices=list(TransactionStatus))
     value: float = ormar.Float()
     transaction_reference: str = ormar.String(max_length=200)
     remark: str = ormar.String(max_length=500)

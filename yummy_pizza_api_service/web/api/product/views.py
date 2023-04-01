@@ -4,7 +4,7 @@ from fastapi import APIRouter
 from fastapi.param_functions import Depends
 
 from yummy_pizza_api_service.db.dao.product_dao import ProductDAO
-from yummy_pizza_api_service.db.models.product_model import ProductModel
+from yummy_pizza_api_service.db.models.product_model import Product
 from yummy_pizza_api_service.web.api.product.schema import (
     ProductModelDTO, ProductModelInputDTO
 )
@@ -17,7 +17,7 @@ async def get_product_models(
     limit: int = 15,
     offset: int = 0,
     product_dao: ProductDAO = Depends(),
-) -> List[ProductModel]:
+) -> List[Product]:
     """
     Retrieve all dummy objects from the database.
 

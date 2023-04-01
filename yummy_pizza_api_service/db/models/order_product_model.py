@@ -1,16 +1,23 @@
-
+"""
 from typing import List, Optional
 from functools import reduce
 import ormar
 from yummy_pizza_api_service.db.base import BaseMeta, BaseModel
-from product_model import ProductModel
-from product_option_model import ProductOptionModel
+from yummy_pizza_api_service.db.models.product_model import Product
+from yummy_pizza_api_service.db.models.product_option_model import ProductOption
 
 
 class OrderProduct(BaseModel):
+    __table_args__ = {'extend_existing': True}
+
     quality: int = ormar.Integer()
-    base_referance: Optional[ProductModel] = ormar.ForeignKey(ProductModel)
-    extra_options: Optional[List[ProductOptionModel]] = ormar.ManyToMany(ProductOptionModel)
+    base_referance: Optional[Product] = ormar.ForeignKey(
+        Product,
+        name="fk_base_referance_product",
+        skip_reverse=True,
+        nullable=False
+    )
+   
     remark: str
 
     class Meta(BaseMeta):
@@ -25,5 +32,6 @@ class OrderProduct(BaseModel):
             self.base_referance.price_value
             + reduce((lambda x, y: x + y), total_extra_charge)
         ) * self.quality
-
     
+
+"""

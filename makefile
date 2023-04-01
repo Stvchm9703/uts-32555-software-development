@@ -17,3 +17,6 @@ up:
 
 generate-class-diagram:
 	pyreverse -ASmy -o=mmd  yummy_pizza_api_service/db/dummy_class
+
+database-migrate-version:
+	alembic revision --autogenerate -m "Change column data type"

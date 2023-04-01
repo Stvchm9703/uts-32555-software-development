@@ -1,9 +1,9 @@
 from enum import Enum
 from functools import reduce
-from types import Optional, List
+from typing import Optional, List
 import ormar
 from yummy_pizza_api_service.db.base import BaseModel, BaseMeta
-from product_option_model import ProductOptionModel
+# from yummy_pizza_api_service.db.models.product_option_model import ProductOptionModel
 
 
 class ProductType(Enum):
@@ -13,17 +13,19 @@ class ProductType(Enum):
     discount = 'discount'
 
 
-class ProductModel(BaseModel):
+class Product(BaseModel):
     """
     # Product Model:
     ## description :
         for display menu and product selection,
         not the order contain
     """
+    __table_args__ = {'extend_existing': True}
+
     name: str = ormar.String(max_length=200)
     description: str = ormar.String(max_length=500)
-    item_type: str = ormar.String(choices=list(ProductType))
-    category: str = ormar.String()
+    item_type: str = ormar.String(max_length=100, choices=list(ProductType))
+    category: str = ormar.String(max_length=250)
     kal: float = ormar.Float(minimum=0)
     price_value: float = ormar.Float()
     rate: float = ormar.Float()
@@ -39,6 +41,6 @@ class ProductModel(BaseModel):
         """
         return True
 
-    @getattr
+    @property
     def full_price_value(self) -> float:
         return (1 + self.rate) * self.price_value

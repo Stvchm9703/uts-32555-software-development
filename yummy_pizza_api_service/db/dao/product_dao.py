@@ -1,6 +1,6 @@
 from typing import List, Optional
-from yummy_pizza_api_service.db.models.product_model import ProductModel, ProductType
-from yummy_pizza_api_service.db.models.product_option_model import ProductOptionModel, ProductOptionKind
+from yummy_pizza_api_service.db.models.product_model import Product, ProductType
+from yummy_pizza_api_service.db.models.product_option_model import ProductOption, ProductOptionKind
 
 
 class ProductDAO:
@@ -8,9 +8,9 @@ class ProductDAO:
 
     async def create(
             self,
-            product: ProductModel
+            product: Product
     ) -> None:
-        new_product = ProductModel(**product)
+        new_product = Product(**product)
         await new_product.save_related(follow=True, save_all=True)
         return
 
@@ -23,10 +23,10 @@ class ProductDAO:
         max_count: int,
         min_count: int,
         kal: float,
-        related_prod: ProductModel = None
+        related_prod: Product = None
     ):
         if related_prod is not None:
-            await ProductOptionModel.objects.create(
+            await ProductOption.objects.create(
                 name,
                 description,
                 extra_charge,
@@ -37,7 +37,7 @@ class ProductDAO:
                 option_for_product=related_prod
             )
             return
-        await ProductOptionModel.objects.create(
+        await ProductOption.objects.create(
             name,
             description,
             extra_charge,
@@ -48,9 +48,9 @@ class ProductDAO:
         )
         return
 
-    async def get_all_products(self, limit: int = 15, offset: int = 0) -> List[ProductModel]:
+    async def get_all_products(self, limit: int = 15, offset: int = 0) -> List[Product]:
 
-        return await ProductModel.objects\
+        return await Product.objects\
             .limit(limit)\
             .offset(offset)\
             .all()
@@ -62,42 +62,42 @@ class ProductDAO:
         price_max_range: float = None,
         price_min_range: float = None,
         limit: int = 15, offset: int = 0
-    ) -> List[ProductModel]:
+    ) -> List[Product]:
         """
         Get specific dummy model.
 
         :param name: name of dummy instance.
         :return: dummy models.
         """
-        query = ProductModel.objects
+        query = Product.objects
         if keyword:
             # query = query.filter(ProductModel.name == keyword)
             query = query.filter(
-                ProductModel.name.contains(keyword)
-                | ProductModel.description.contains(keyword)
+                Product.name.contains(keyword)
+                | Product.description.contains(keyword)
             )
         if prod_type:
             query = query.filter(
-                ProductModel.item_type == prod_type.value
+                Product.item_type == prod_type.value
             )
         if price_max_range:
             query = query.filter(
-                ProductModel.price_value <= price_max_range
+                Product.price_value <= price_max_range
             )
         if price_min_range:
             query = query.filter(
-                ProductModel.price_value >= price_min_range
+                Product.price_value >= price_min_range
             )
 
         return await query.limit(limit).offset(offset).all()
 
-    async def update(self, product: ProductModel) -> None:
-        tar = await ProductModel.objects.get(product)
+    async def update(self, product: Product) -> None:
+        tar = await Product.objects.get(product)
         if tar:
             await product.save_related(follow=True)
         pass
 
-    async def delete(self, product: ProductModel) -> None:
-        tar = await ProductModel.objects.get(**product)
+    async def delete(self, product: Product) -> None:
+        tar = await Product.objects.get(**product)
         if tar:
             await tar.delete()
