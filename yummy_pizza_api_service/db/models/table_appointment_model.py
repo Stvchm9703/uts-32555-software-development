@@ -22,12 +22,7 @@ class TableAppointment(BaseModel):
     staff: str = ormar.String(max_length=200)
     timeslot: datetime = ormar.DateTime()
     transaction: Optional[Transaction] = ormar.ForeignKey(
-        Transaction,
-        name="fk_transaction"
-    )
+        Transaction, skip_reverse=True)
 
     class Meta(BaseMeta):
-        """
-        database meta
-        """
         tablename = "table_appointment"

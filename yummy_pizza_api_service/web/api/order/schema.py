@@ -3,15 +3,14 @@ from pydantic import BaseModel
 
 
 class ProductOptionModelDTO(BaseModel):
-    id: Optional[int]
-    name: str
+    id: int
+    name: int
     description: str
     extra_charge: float
     option_kind: str
-    max_count: Optional[int]
-    min_count: Optional[int]
-    kal: Optional[float]
-    option_sets: Optional[List[str]]
+    max_count: int
+    min_count: int
+    kal: float
 
     class Config:
         orm_mode = True
@@ -40,15 +39,3 @@ class ProductModelDTO(BaseModel):
 
 class ProductModelInputDTO(BaseModel):
     """DTO for creating new product model."""
-    id: Optional[int]
-    name: str
-    description: str
-    item_type: str
-    category: str
-    kal: float
-    price_value: float
-    rate: float
-    options: Optional[List[ProductOptionModelDTO]]
-
-    class Config:
-        orm_mode = True

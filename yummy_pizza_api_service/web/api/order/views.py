@@ -29,15 +29,15 @@ async def get_product_models(
     return await product_dao.get_all_products(limit=limit, offset=offset)
 
 
-@router.post("/create/")
-async def create_product_model(
-    new_product_object: ProductModelInputDTO,
-    product_dao: ProductDAO = Depends(),
-) -> None:
-    """
-    Creates dummy model in the database.
+# @router.put("/")
+# async def create_dummy_model(
+#     new_dummy_object: DummyModelInputDTO,
+#     dummy_dao: DummyDAO = Depends(),
+# ) -> None:
+#     """
+#     Creates dummy model in the database.
 
-    :param new_dummy_object: new dummy model item.
-    :param dummy_dao: DAO for dummy models.
-    """
-    await product_dao.create(product=new_product_object.dict())
+#     :param new_dummy_object: new dummy model item.
+#     :param dummy_dao: DAO for dummy models.
+#     """
+#     await dummy_dao.create_dummy_model(**new_dummy_object.dict())

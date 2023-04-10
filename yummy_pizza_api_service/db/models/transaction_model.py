@@ -1,10 +1,13 @@
 
-from typing import List, Optional
+from typing import List, Optional, Union
 from functools import reduce
 from datetime import datetime
 from enum import Enum
 import ormar
+# from ormar import fields
 from yummy_pizza_api_service.db.base import BaseMeta, BaseModel
+# from yummy_pizza_api_service.db.models.receipt_model import OrderReceipt
+# from yummy_pizza_api_service.db.models.table_appointment_model import TableAppointment
 
 
 class TransactionStatus(Enum):

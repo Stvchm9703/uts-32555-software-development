@@ -1,6 +1,7 @@
-from typing import List, Optional
+from typing import List, Optional, Union
 from yummy_pizza_api_service.db.models.product_model import Product, ProductType
 from yummy_pizza_api_service.db.models.product_option_model import ProductOption, ProductOptionKind
+import json
 
 
 class ProductDAO:
@@ -8,10 +9,24 @@ class ProductDAO:
 
     async def create(
             self,
-            product: Product
+            product: Union[Product, dict]
     ) -> None:
-        new_product = Product(**product)
-        await new_product.save_related(follow=True, save_all=True)
+        if product['options']:
+            new_product_options = []
+            for item in product['options']:
+                print(json.dumps(item))
+                _opt_sets = ''
+                if item['option_sets'] and item['option_sets'] != None:
+                    _opt_sets = ','.join( item['option_sets'])
+                del item['option_sets']
+                prof_option = ProductOption(**item, _option_sets=_opt_sets)
+                new_product_options.append(prof_option)
+            print(new_product_options)
+            new_product = Product(**{**product, 'options':new_product_options})
+            await new_product.save_related(follow=True, save_all=True)
+        else:
+            new_product = Product(**product)
+            await new_product.save_related(follow=True, save_all=True)
         return
 
     async def create_option(
@@ -61,7 +76,8 @@ class ProductDAO:
         prod_type: ProductType = None,
         price_max_range: float = None,
         price_min_range: float = None,
-        limit: int = 15, offset: int = 0
+        limit: int = 15,
+        offset: int = 0
     ) -> List[Product]:
         """
         Get specific dummy model.
