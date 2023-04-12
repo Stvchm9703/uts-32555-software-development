@@ -11,61 +11,25 @@ class ProductDAO:
             self,
             product: Union[Product, dict]
     ) -> None:
-        if product['options']:
+        if 'options' in product and product['options'] != None:
             new_product_options = []
             for item in product['options']:
-                print(json.dumps(item))
-                _opt_sets = ''
-                if item['option_sets'] and item['option_sets'] != None:
-                    _opt_sets = ','.join( item['option_sets'])
-                del item['option_sets']
-                prof_option = ProductOption(**item, _option_sets=_opt_sets)
+                prof_option = ProductOption(**item)
                 new_product_options.append(prof_option)
-            print(new_product_options)
-            new_product = Product(**{**product, 'options':new_product_options})
+            # print(new_product_options)
+            new_product = Product(**{**product, 'options': new_product_options})
             await new_product.save_related(follow=True, save_all=True)
         else:
             new_product = Product(**product)
             await new_product.save_related(follow=True, save_all=True)
         return
 
-    async def create_option(
-        self,
-        name: str,
-        description: str,
-        extra_charge: float,
-        option_kind: ProductOptionKind,
-        max_count: int,
-        min_count: int,
-        kal: float,
-        related_prod: Product = None
-    ):
-        if related_prod is not None:
-            await ProductOption.objects.create(
-                name,
-                description,
-                extra_charge,
-                max_count,
-                min_count,
-                kal,
-                option_kind=option_kind.value,
-                option_for_product=related_prod
-            )
-            return
-        await ProductOption.objects.create(
-            name,
-            description,
-            extra_charge,
-            max_count,
-            min_count,
-            kal,
-            option_kind=option_kind.value,
-        )
-        return
+    async def get(self, id=int) -> Product:
+        return await Product.objects.select_all(follow=True).get_or_none(id=id)
 
     async def get_all_products(self, limit: int = 15, offset: int = 0) -> List[Product]:
-
         return await Product.objects\
+            .select_all()\
             .limit(limit)\
             .offset(offset)\
             .all()
@@ -85,7 +49,7 @@ class ProductDAO:
         :param name: name of dummy instance.
         :return: dummy models.
         """
-        query = Product.objects
+        query = Product.objects.select_all(follow=True)
         if keyword:
             # query = query.filter(ProductModel.name == keyword)
             query = query.filter(
@@ -108,12 +72,17 @@ class ProductDAO:
         return await query.limit(limit).offset(offset).all()
 
     async def update(self, product: Product) -> None:
-        tar = await Product.objects.get(product)
+        tar = await Product.objects.select_all(follow=True).get(id=product.id)
+        print(tar.json())
         if tar:
-            await product.save_related(follow=True)
+            if (product.options != None or len(product.options) == 0) and len(tar.options) != len(product.options):
+                for item in product.options:
+                    await ProductOption.objects.update_or_create(**(item.dict()))
+
+            await tar.update(**(product.dict()))
         pass
 
     async def delete(self, product: Product) -> None:
-        tar = await Product.objects.get(**product)
+        tar = await Product.objects.get(id=product.id)
         if tar:
             await tar.delete()

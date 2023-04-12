@@ -3,7 +3,7 @@ from enum import Enum
 from functools import reduce
 import json
 import ormar
-# import pydantic
+import pydantic
 # from pydantic.json import pydantic_encoder
 from yummy_pizza_api_service.db.base import BaseMeta, BaseModel
 # from yummy_pizza_api_service.db.models.product_model import Product
@@ -49,7 +49,7 @@ class OrderReceipt(BaseModel):
     customer_address: str = ormar.String(max_length=500)
     staff: str = ormar.String(max_length=200)
     remark: str = ormar.String(max_length=500)
-    order_snapshot: str = ormar.String(max_length=500)
+    order_snapshot: Optional[pydantic.Json] = ormar.JSON(nullable=True)
     transaction: Optional[Transaction] = ormar.ForeignKey(Transaction, skip_reverse=True)
     value : float = ormar.Float()
     

@@ -41,3 +41,23 @@ async def create_product_model(
     :param dummy_dao: DAO for dummy models.
     """
     await product_dao.create(product=new_product_object.dict())
+
+    return await product_dao.filter(keyword=new_product_object.name)
+
+
+@router.post("/update/")
+async def update_product_model(
+    product_object: ProductModelInputDTO,
+    product_dao: ProductDAO = Depends(),
+) -> None:
+    await product_dao.update(product=product_object)
+    return 
+
+@router.post("/delete/")
+async def delete_product_model(
+    product_object: ProductModelInputDTO,
+    product_dao: ProductDAO = Depends(),
+) -> None:
+    await product_dao.delete(product=product_object)
+    # return {"act": "dene"}
+    return 

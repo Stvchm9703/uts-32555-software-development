@@ -24,7 +24,7 @@ class ProductModelDTO(BaseModel):
     It returned when accessing Product models from the API.
     """
 
-    id: int
+    id:Optional[int]
     name: str
     description: str
     item_type: str
