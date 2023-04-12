@@ -75,11 +75,11 @@ class ProductDAO:
         tar = await Product.objects.select_all(follow=True).get(id=product.id)
         print(tar.json())
         if tar:
-            if (product.options != None or len(product.options) == 0) and len(tar.options) != len(product.options):
-                for item in product.options:
-                    await ProductOption.objects.update_or_create(**(item.dict()))
-
             await tar.update(**(product.dict()))
+            print('here')
+            for item in product.options:
+                await ProductOption.objects.update_or_create(**(item.dict()), option_for_product=tar)
+
         pass
 
     async def delete(self, product: Product) -> None:

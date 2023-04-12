@@ -234,10 +234,15 @@ async def test_update_with_option(
         **stored_object.dict(), 'options': test_updated_obj_option
     }
     k = ProductModelDTO(**ll)
-
-    response = await client.post(url, json=k.json())
+    response = await client.post(url, json=k.dict())
     assert response.status_code == status.HTTP_200_OK
     instances = await dao.get(id=stored_object.id)
     assert instances.id == stored_object.id
     assert instances.name == stored_object.name
     assert instances.description == stored_object.description
+    # last ok
+    instances = await instances.load_all()
+    
+    assert len(instances.options) == len(test_updated_obj_option)
+    for index, opt_item in enumerate(instances.options):
+        assert opt_item.name == test_updated_obj_option[index]['name']
