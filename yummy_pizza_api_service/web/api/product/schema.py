@@ -24,7 +24,7 @@ class ProductModelDTO(BaseModel):
     It returned when accessing Product models from the API.
     """
 
-    id:Optional[int]
+    id: Optional[int]
     name: str
     description: str
     item_type: str
@@ -41,13 +41,13 @@ class ProductModelDTO(BaseModel):
 class ProductModelInputDTO(BaseModel):
     """DTO for creating new product model."""
     id: Optional[int]
-    name: str
-    description: str
-    item_type: str
-    category: str
-    kal: float
-    price_value: float
-    rate: float
+    name: Optional[str]
+    description: Optional[str]
+    item_type: Optional[str]
+    category: Optional[str]
+    kal: Optional[float]
+    price_value: Optional[float]
+    rate: Optional[float]
     options: Optional[List[ProductOptionModelDTO]]
 
     class Config:

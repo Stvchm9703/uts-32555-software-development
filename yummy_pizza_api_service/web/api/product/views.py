@@ -33,7 +33,7 @@ async def get_product_models(
 async def create_product_model(
     new_product_object: ProductModelInputDTO,
     product_dao: ProductDAO = Depends(),
-) -> None:
+) -> List[Product]:
     """
     Creates dummy model in the database.
 
@@ -49,15 +49,21 @@ async def create_product_model(
 async def update_product_model(
     product_object: ProductModelInputDTO,
     product_dao: ProductDAO = Depends(),
-) -> None:
-    await product_dao.update(product=product_object)
-    return 
+) -> dict:
+    updated = await product_dao.update(product=product_object)
+    return {
+        "edited": updated,
+        "status": "complete"
+    }
+
 
 @router.post("/delete/")
 async def delete_product_model(
     product_object: ProductModelInputDTO,
     product_dao: ProductDAO = Depends(),
-) -> None:
-    await product_dao.delete(product=product_object)
-    # return {"act": "dene"}
-    return 
+) -> dict:
+    deleted = await product_dao.delete(product=product_object)
+    return {
+        "edited": deleted,
+        "status": "complete"
+    }

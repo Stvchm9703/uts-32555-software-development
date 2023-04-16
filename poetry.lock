@@ -2173,6 +2173,21 @@ dotenv = ["python-dotenv (>=0.10.4)"]
 email = ["email-validator (>=1.0.3)"]
 
 [[package]]
+name = "pydash"
+version = "7.0.0"
+description = "The kitchen sink of Python utility libraries for doing \"stuff\" in a functional way. Based on the Lo-Dash Javascript library."
+category = "main"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "pydash-7.0.0-py3-none-any.whl", hash = "sha256:65eec35f3be7addcdadf6d1e3c20af77a4db966c2eed08c6eddb19092559e148"},
+    {file = "pydash-7.0.0.tar.gz", hash = "sha256:5321092644ce02bfb00453c85e2eb8ee7e134f54acb205398aeffb9ee2073f38"},
+]
+
+[package.extras]
+dev = ["Sphinx", "black", "build", "coverage", "docformatter", "flake8", "flake8-black", "flake8-bugbear", "flake8-isort", "importlib-metadata (<5)", "invoke", "isort", "mypy", "pylint", "pytest", "pytest-cov", "pytest-mypy-testing", "sphinx-autodoc-typehints", "sphinx-rtd-theme", "tox", "twine", "wheel"]
+
+[[package]]
 name = "pydocstyle"
 version = "6.3.0"
 description = "Python docstring style checker"
@@ -3268,4 +3283,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "b4837d54e11684618a9e3aa5d1673e2c82600e9211efb66c1e840d0854c85bbd"
+content-hash = "6089a4f9a39fef014e44f0644203d7912bf250f20eaca72989fc601f73a77621"

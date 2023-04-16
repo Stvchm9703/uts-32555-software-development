@@ -9,7 +9,16 @@ from yummy_pizza_api_service.services.redis.models.order_product_model import Or
 
 
 class OrderProductOption(BaseModel):
+    id: str
     option: str
     count: int
     charge: float
     option_referance: Optional[ProductOption]
+    
+    @property
+    def opt_refer(self) -> int:
+        return self.option_referance.id or None
+    
+
+    def to_receipt_str(self) -> str:
+        return ""

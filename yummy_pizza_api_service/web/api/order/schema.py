@@ -1,41 +1,60 @@
-from typing import List, Optional
+from typing import List, Optional, Union
+from datetime import datetime
+from uuid import UUID
+
 from pydantic import BaseModel
+from yummy_pizza_api_service.db.models.receipt_model import OrderType, OrderStatus, OrderDeliveryType, OrderReceipt
+from yummy_pizza_api_service.db.models.transaction_model import Transaction
+from yummy_pizza_api_service.services.redis.models.order_product_model import OrderProduct
+
+from yummy_pizza_api_service.web.api.product.schema import ProductOptionModelDTO, ProductModelDTO, ProductModelInputDTO
 
 
-class ProductOptionModelDTO(BaseModel):
-    id: int
-    name: int
-    description: str
-    extra_charge: float
-    option_kind: str
-    max_count: int
-    min_count: int
-    kal: float
-
-    class Config:
-        orm_mode = True
+class OrderProductOptionDTO(BaseModel):
+    id: Optional[str]
+    option: Optional[str]
+    count: Optional[int]
+    charge: Optional[float]
+    option_referance: Optional[ProductOptionModelDTO]
 
 
-class ProductModelDTO(BaseModel):
-    """
-    DTO for Product models.
-
-    It returned when accessing Product models from the API.
-    """
-
-    id: int
-    name: str
-    description: str
-    item_type: str
-    category: str
-    kal: float
-    price_value: float
-    rate: float
-    options: Optional[List[ProductOptionModelDTO]]
-
-    class Config:
-        orm_mode = True
+class OrderProductDTO(BaseModel):
+    id: Optional[str]
+    quality: Optional[int]
+    product: ProductModelInputDTO
+    extra_option: Optional[List[OrderProductOptionDTO]]
+    remark: Optional[str]
 
 
-class ProductModelInputDTO(BaseModel):
-    """DTO for creating new product model."""
+class OrderDTO(BaseModel):
+    id: str
+    created_date: Optional[datetime]
+    updated_date: Optional[datetime]
+    contact_type: OrderType
+    status: OrderStatus
+    deliver_type: OrderDeliveryType
+
+    customer_name: str
+    customer_contact: int
+    customer_address: str
+
+    order_number: int
+    staff: str
+    items: Optional[List[OrderProductDTO]]
+
+    # transaction: Optional[Transaction]
+
+
+class OrderInputDTO(BaseModel):
+    id: Optional[str]
+    contact_type: Optional[str]
+    status: Optional[str]
+    deliver_type: Optional[str]
+    customer_name: Optional[str]
+    customer_contact: Optional[int]
+    customer_address: Optional[str]
+    order_number: Optional[int]
+    staff: Optional[str]
+    items: Optional[List[OrderProductDTO]]
+
+    # transaction: Optional[Transaction]
