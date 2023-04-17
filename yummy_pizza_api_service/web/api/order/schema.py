@@ -28,11 +28,11 @@ class OrderProductDTO(BaseModel):
 
 class OrderDTO(BaseModel):
     id: str
-    created_date: Optional[datetime]
-    updated_date: Optional[datetime]
-    contact_type: OrderType
-    status: OrderStatus
-    deliver_type: OrderDeliveryType
+    # created_date: Optional[datetime]
+    # updated_date: Optional[datetime]
+    contact_type: str
+    status: str
+    deliver_type: str
 
     customer_name: str
     customer_contact: int

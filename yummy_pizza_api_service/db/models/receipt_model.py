@@ -10,29 +10,7 @@ from yummy_pizza_api_service.db.base import BaseMeta, BaseModel
 # from yummy_pizza_api_service.db.models.product_option_model import ProductOption
 from yummy_pizza_api_service.db.models.transaction_model import Transaction
 
-# from yummy_pizza_api_service.services.redis.models.order_model import OrderProduct
-
-
-class OrderType(Enum):
-    walk_in = "walk_in"
-    phone_in = "phone_in"
-    online_system = "online_system"
-
-
-class OrderStatus(Enum):
-    created = "created"
-    void = "void"
-    paid = "paid"
-    unpaid = "unpaid"
-    producing = "producing"
-    delivering = "delivering"
-    completed = "completed"
-
-
-class OrderDeliveryType(Enum):
-    dine_in = "dine_in"
-    take_away = "take_away"
-    remote_delivery = "remote_delivery"
+from yummy_pizza_api_service.services.redis.models.order_model import OrderType, OrderStatus, OrderDeliveryType
 
 
 class OrderReceipt(BaseModel):

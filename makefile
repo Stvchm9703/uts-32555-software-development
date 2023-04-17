@@ -20,3 +20,6 @@ generate-class-diagram:
 
 database-migrate-version:
 	alembic revision --autogenerate -m "Change column data type"
+
+database-export-schema:
+	pg_dump -s databasename > file.dump

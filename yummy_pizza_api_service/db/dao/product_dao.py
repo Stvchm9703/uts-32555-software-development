@@ -44,9 +44,10 @@ class ProductDAO:
         offset: int = 0
     ) -> List[Product]:
         """
-        Get specific dummy model.
+        Get specific product model.
 
         :param name: name of dummy instance.
+        :
         :return: dummy models.
         """
         query = Product.objects.select_all(follow=True)

@@ -1,7 +1,7 @@
 import strawberry
 from strawberry.fastapi import GraphQLRouter
 
-from yummy_pizza_api_service.web.gql import dummy, echo, redis
+from yummy_pizza_api_service.web.gql import dummy, echo, redis, product
 from yummy_pizza_api_service.web.gql.context import get_context
 
 
@@ -10,6 +10,7 @@ class Query(  # noqa: WPS215
     echo.Query,
     dummy.Query,
     redis.Query,
+    product.Query
 ):
     """Main query."""
 
@@ -19,6 +20,7 @@ class Mutation(  # noqa: WPS215
     echo.Mutation,
     dummy.Mutation,
     redis.Mutation,
+    product.Mutation,
 ):
     """Main mutation."""
 
