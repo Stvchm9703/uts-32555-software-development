@@ -52,3 +52,12 @@ class ProductModelInputDTO(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class ProductModelSearchInputDTO(BaseModel):
+    keyword: Optional[str]
+    prod_type: Optional[str]
+    price_max_range: Optional[float]
+    price_min_range: Optional[float]
+    limit: Optional[int]
+    offset: Optional[int]

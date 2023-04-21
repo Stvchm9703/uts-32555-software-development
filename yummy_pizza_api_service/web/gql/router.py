@@ -10,7 +10,7 @@ class Query(  # noqa: WPS215
     echo.Query,
     dummy.Query,
     redis.Query,
-    product.Query
+    product.Query,
 ):
     """Main query."""
 

@@ -15,11 +15,12 @@ class ProductType(Enum):
 
 class Product(BaseModel):
     """
-    # Product Model:
-    ## description :
+    ### Product Model: ###
+    #### description : ####
         for display menu and product selection,
         not the order contain
     """
+
     __table_args__ = {'extend_existing': True}
 
     name: str = ormar.String(max_length=200)

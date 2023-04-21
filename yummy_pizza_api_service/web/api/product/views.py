@@ -4,9 +4,9 @@ from fastapi import APIRouter
 from fastapi.param_functions import Depends
 
 from yummy_pizza_api_service.db.dao.product_dao import ProductDAO
-from yummy_pizza_api_service.db.models.product_model import Product
+from yummy_pizza_api_service.db.models.product_model import Product, ProductType
 from yummy_pizza_api_service.web.api.product.schema import (
-    ProductModelDTO, ProductModelInputDTO
+    ProductModelDTO, ProductModelInputDTO, ProductModelSearchInputDTO
 )
 
 router = APIRouter()
@@ -19,14 +19,32 @@ async def get_product_models(
     product_dao: ProductDAO = Depends(),
 ) -> List[Product]:
     """
-    Retrieve all dummy objects from the database.
+    Retrieve all product objects from the database.
 
-    :param limit: limit of dummy objects, defaults to 10.
-    :param offset: offset of dummy objects, defaults to 0.
-    :param dummy_dao: DAO for dummy models.
-    :return: list of dummy obbjects from database.
+    :param limit: limit of product objects, defaults to 10.
+
+    :param offset: offset of product objects, defaults to 0.
+
+    :param product_dao: DAO for product models.
+
+    :return: list of product objects from database.
     """
     return await product_dao.get_all_products(limit=limit, offset=offset)
+
+
+@router.post("/search/", response_model=List[ProductModelDTO])
+async def filter_product_models(
+    query: ProductModelSearchInputDTO,
+    product_dao: ProductDAO = Depends(),
+) -> List[Product]:
+    """
+    Get all product objects with filter params from the database.
+
+    :params query: query set for searching 
+
+    :return: list of product objects from database.
+    """
+    return await product_dao.filter(**query)
 
 
 @router.post("/create/")
@@ -35,14 +53,20 @@ async def create_product_model(
     product_dao: ProductDAO = Depends(),
 ) -> List[Product]:
     """
-    Creates dummy model in the database.
+    Creates Product model in the database.
 
-    :param new_dummy_object: new dummy model item.
-    :param dummy_dao: DAO for dummy models.
+    :param new_product_object: new product model item. 
+    :param product_dao: DAO for product models.
+
+    :return `edited`: new created object
+    :return `status` : status 
     """
     await product_dao.create(product=new_product_object.dict())
-
-    return await product_dao.filter(keyword=new_product_object.name)
+    creatde = await product_dao.filter(keyword=new_product_object.name, prod_type=ProductType[new_product_object.item_type])
+    return {
+        "edited": creatde,
+        "status": "complete"
+    }
 
 
 @router.post("/update/")
@@ -50,6 +74,15 @@ async def update_product_model(
     product_object: ProductModelInputDTO,
     product_dao: ProductDAO = Depends(),
 ) -> dict:
+    """
+    Update Product model in the database.
+
+    :param product_object: the product model item that need to be update,(id is necessary).
+    :param product_dao: DAO for product models.
+
+    :return `edited`: updated object
+    :return `status`: status
+    """
     updated = await product_dao.update(product=product_object)
     return {
         "edited": updated,
@@ -62,6 +95,15 @@ async def delete_product_model(
     product_object: ProductModelInputDTO,
     product_dao: ProductDAO = Depends(),
 ) -> dict:
+    """
+    Delete Product model within the database.
+
+    :param product_object: the target product model item that need to be delete,(id is necessary).
+    :param product_dao: DAO for product models.
+
+    :return `edited`: deleted object
+    :return `status`: status
+    """
     deleted = await product_dao.delete(product=product_object)
     return {
         "edited": deleted,

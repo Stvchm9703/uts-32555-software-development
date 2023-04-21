@@ -1,6 +1,6 @@
 import strawberry
 from typing import List, Optional
-from yummy_pizza_api_service.web.api.product.schema import ProductModelDTO, ProductModelInputDTO, ProductOptionModelDTO
+# from yummy_pizza_api_service.web.api.product.schema import ProductModelDTO, ProductModelInputDTO, ProductOptionModelDTO
 
 
 @strawberry.type
@@ -24,12 +24,12 @@ class ProductDTO:
 
     It returned when accessing dummy models from the API.
     """
-    id: Optional[ int]
-    name:  str
+    id: int
+    name: str
     description: str
     item_type: str
     category: str
-    kal: Optional[float]
-    price_value: Optional[float]
-    rate: Optional[float]
+    kal: float
+    price_value: float
+    rate: float
     options: List[ProductOptionDTO]
