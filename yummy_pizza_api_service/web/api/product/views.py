@@ -62,9 +62,9 @@ async def create_product_model(
     :return `status` : status 
     """
     await product_dao.create(product=new_product_object.dict())
-    creatde = await product_dao.filter(keyword=new_product_object.name, prod_type=ProductType[new_product_object.item_type])
+    created = await product_dao.filter(keyword=new_product_object.name, prod_type=ProductType[new_product_object.item_type])
     return {
-        "edited": creatde,
+        "edited": created,
         "status": "complete"
     }
 

@@ -34,16 +34,17 @@ class OrderDAO:
         return await Order.objects.select_all(follow=True).get_or_none(id=id)
         return
 
-    async def get_all_products(self, limit: int = 15, offset: int = 0) -> List[Order]:
+    async def get_latest_order(self, limit: int = 15, offset: int = 0) -> List[Order]:
         return await Order.objects\
             .select_all()\
+            .order_by("-created_date")\
             .limit(limit)\
             .offset(offset)\
             .all()
 
     async def filter(
         self,
-  
+        query: dict = {},
         limit: int = 15,
         offset: int = 0
     ) -> List[Order]:
@@ -54,24 +55,32 @@ class OrderDAO:
         :return: dummy models.
         """
         query = Order.objects.select_all(follow=True)
-        # if keyword:
-        #     # query = query.filter(ProductModel.name == keyword)
-        #     query = query.filter(
-        #         Product.name.contains(keyword)
-        #         | Product.description.contains(keyword)
-        #     )
-        # if prod_type:
-        #     query = query.filter(
-        #         Product.item_type == prod_type.value
-        #     )
-        # if price_max_range:
-        #     query = query.filter(
-        #         Product.price_value <= price_max_range
-        #     )
-        # if price_min_range:
-        #     query = query.filter(
-        #         Product.price_value >= price_min_range
-        #     )
+        if 'id' in query:
+            query = query.filter(
+                Order.id == (query['id'])
+            )
+        if 'keyword' in query:
+            # query = query.filter(ProductModel.name == keyword)
+            query = query.filter(
+                Order.customer_name.contains(query['keyword'])
+                | Order.customer_address.contains(query['keyword'])
+            )
+        if 'staff' in query:
+            query = query.filter(
+                Order.customer_name.contains(query['staff'])
+            )
+        if 'customer_contact' in query:
+            query = query.filter(
+                Order.customer_contact.contains(query['customer_contact'])
+            )
+        if 'order_number' in query:
+            query = query.filter(
+                Order.order_number == query['order_number']
+            )
+        if 'status' in query:
+            query = query.filter(
+                Order.status == query['status']
+            )
 
         return await query.limit(limit).offset(offset).all()
 
@@ -104,7 +113,7 @@ class OrderDAO:
         #     return tar_id
         return None
 
-    async def add_item(self, product: Product, extra_options: List[ProductOption]) -> Order:
+    async def add_item(self, order: Order, new_products: OrderProduct) -> Order:
         return None
 
     async def remove_item(self):

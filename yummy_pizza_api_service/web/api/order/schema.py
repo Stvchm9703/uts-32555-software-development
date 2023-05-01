@@ -26,6 +26,16 @@ class OrderProductDTO(BaseModel):
     remark: Optional[str]
 
 
+class OrderRefProductDTO(BaseModel):
+    id: Optional[str]
+    order_id: Optional[str]
+    order_number: Optional[int]
+    quality: Optional[int]
+    product: Optional[ProductModelInputDTO]
+    extra_option: Optional[List[OrderProductOptionDTO]]
+    remark: Optional[str]
+
+
 class OrderDTO(BaseModel):
     id: str
     # created_date: Optional[datetime]
