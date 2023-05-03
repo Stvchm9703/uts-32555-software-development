@@ -18,7 +18,8 @@ class OrderProduct(BaseModel):
     remark: str
     for_order: Optional[Order] = ormar.ForeignKey(
         Order,
-        name="fk_order_refer"
+        name="fk_order_refer",
+        related_name="items",
     )
 
     class Meta(BaseMeta):

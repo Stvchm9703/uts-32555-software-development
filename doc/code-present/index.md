@@ -286,8 +286,8 @@ classDiagram
 
 
 ::::{.col.text-right}
-- it should be inherited in multiple based, instead of inherect layer in layer
-- 
+- it should be inherited in multiple based, instead of inherect layer by layer
+
 
 
 ::::
@@ -519,6 +519,48 @@ async def before_update(sender, instance, **kwargs):
     instance.updated_date = datetime.now
 
 ```
+
+---
+
+## other method that involve 
+
+--
+
+### backend - Test Drivedn Development
+
+```bash{data-trim data-background-transition="zoom" }
+❯ make test
+docker-compose -f deploy/docker-compose.yml --project-directory . run --rm api pytest -vv .
+[+] Running 2/2
+ ✔ Network uts-32555-software-development_default  Created                 0.0s 
+ ✔ Container uts-32555-software-development-db-1   Created                 0.0s 
+[+] Running 1/1
+ ✔ Container uts-32555-software-development-db-1  Started                  0.2s 
+============================= test session starts ==============================
+platform linux -- Python 3.9.6, pytest-7.2.2, pluggy-1.0.0 -- /usr/local/bin/python
+cachedir: .pytest_cache
+rootdir: /app/src, configfile: pyproject.toml
+plugins: cov-4.0.0, anyio-3.6.2, env-0.8.1
+collected 9 items                                                              
+
+yummy_pizza_api_service/tests/test_dummy.py::test_creation PASSED        [ 11%]
+yummy_pizza_api_service/tests/test_dummy.py::test_getting PASSED         [ 22%]
+yummy_pizza_api_service/tests/test_echo.py::test_echo PASSED             [ 33%]
+yummy_pizza_api_service/tests/test_product.py::test_creation PASSED      [ 44%]
+yummy_pizza_api_service/tests/test_product.py::test_creation_with_option PASSED [ 55%]
+yummy_pizza_api_service/tests/test_product.py::test_update PASSED        [ 66%]
+yummy_pizza_api_service/tests/test_product.py::test_update_with_option PASSED [ 77%]
+yummy_pizza_api_service/tests/test_product.py::test_deletion PASSED      [ 88%]
+yummy_pizza_api_service/tests/test_yummy_pizza_api_service.py::test_health PASSED [100%]
+
+========================= 9 passed in 91.92s (0:01:31) =========================
+docker-compose -f deploy/docker-compose.yml --project-directory . down
+[+] Running 2/1
+ ✔ Container uts-32555-software-development-db-1   Removed                 0.1s 
+ ✔ Network uts-32555-software-development_default  Removed                 0.0s
+```
+
+
 
 ---
 

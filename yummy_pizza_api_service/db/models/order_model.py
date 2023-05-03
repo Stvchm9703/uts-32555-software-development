@@ -5,8 +5,9 @@ import ormar
 
 from yummy_pizza_api_service.db.base import BaseModel, BaseMeta
 
-from yummy_pizza_api_service.db.models.order_product_model import OrderProduct
-from yummy_pizza_api_service.db.models.transaction_model import Transaction as Transaction
+# from yummy_pizza_api_service.db.models.order_product_model import OrderProduct
+from datetime import datetime
+from yummy_pizza_api_service.db.models.transaction_model import Transaction, TransactionStatus, PaymentType
 
 
 class OrderType(Enum):
@@ -41,28 +42,24 @@ class Order(BaseModel):
     status: str = ormar.String(max_length=250, choices=list(OrderStatus))
     deliver_type: str = ormar.String(max_length=250, choices=list(OrderDeliveryType))
 
-    customer_name: str = ormar.String(max_length=500)
-    customer_contact: int = ormar.Integer()
-    customer_address: str = ormar.String(max_length=500)
+    customer_name: str = ormar.String(max_length=500, nullable=True)
+    customer_contact: int = ormar.Integer(nullable=True)
+    customer_address: str = ormar.String(max_length=500, nullable=True)
 
     order_number: int = ormar.Integer(maximum=999, minimum=0)
-    #  TODO : implement the staff model
-    staff: str = ormar.String(max_length=200)
-    # items: Optional[List[OrderProduct]] = ormar.ManyToMany(
-    #     OrderProduct,
-    #     name="fk_items_orderproduct"
-    # )
+    staff: str = ormar.String(max_length=200, nullable=True)
 
     transaction: Optional[Transaction] = ormar.ForeignKey(
         Transaction,
         name="fk_transaction",
+        nullable=True
     )
 
     class Meta(BaseMeta):
         """
         database meta
         """
-        tablename = "order"
+        tablename = "op_order"
 
     @property
     def values(self) -> float:
@@ -75,60 +72,39 @@ class Order(BaseModel):
         else:
             return 0.0
 
-    # # item related
-    async def add_items(self, item: OrderProduct) -> bool:
-        """
-        ## add_item
-        to add the product item referancing to menu and add to item list (this order list)
-        """
-        if item.base_referance == None:
-            raise "referencing_product_is_empty"
-            return False
-        if item.quality == 0 or item.base_referance.is_available == False or item.base_referance.is_available == False:
-
-            return False
-
-        if self.items is None:
-            self.items = List[OrderProduct]
-        await self.items.add(item)
-        return True
-
-    async def update_item(self, edited_item: OrderProduct = None) -> bool:
-        if edited_item is None:
-            raise "required_item_is_empty"
-            return False
-        target_update = self.items.filter(id=edited_item.id).get()
-        if len(target_update) == 0:
-            raise "required_item_is_not_existed"
-            return False
-
-        await self.items.filter(id=edited_item.id).update(edited_item)
-        # await self.save_related(relation_field=["items"])
-        return True
-
-    async def remove_item(self, target_item: OrderProduct = None) -> bool:
-        if target_item is None:
-            raise "required_item_is_empty"
-            return False
-
-        target_update = self.items.filter(id=target_item.id).get()
-        if len(target_update) == 0:
-            raise "required_item_is_not_existed"
-            return False
-
-        await self.items.remove(id=target_item.id)
-        return True
-
     async def update_status(self, status: OrderStatus) -> bool:
+        """
+        Update the status of the order.
+
+        :param status: The new status of the order.
+        :type status: OrderStatus
+        :return: True if the status was updated successfully, False otherwise.
+        :rtype: bool
+        :raises: Any exception that occurs during the update process.
+        """
         try:
             self.status = status.value
-            await self.save()
+            await self.update()
             return True
         except:
             return False
 
-    def request_payment(self) -> bool:
-        return
+    async def request_payment(self) -> bool:
+        """
+        Creates a new transaction and updates the order with the new transaction.
+
+        :returns: True if the order is successfully updated, False otherwise.
+        :rtype: bool
+        """
+        new_trans = await Transaction.objects.create(
+            transaction_date=datetime.now(),
+            payment_type=PaymentType.cash.value,
+            payment_status=TransactionStatus.unpaid.value,
+            value=self.values,
+            transaction_reference="",
+            remark=""
+        )
+        return (await Order.objects.update(**self, transaction=new_trans)) == 1
 
     def print_as_receipt(self) -> str:
         """
@@ -143,5 +119,3 @@ class Order(BaseModel):
 
         return ""
 
-    def snapshot(self) -> bool:
-        return False

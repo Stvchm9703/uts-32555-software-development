@@ -51,7 +51,7 @@ async def filter_product_models(
 async def create_product_model(
     new_product_object: ProductModelInputDTO,
     product_dao: ProductDAO = Depends(),
-) -> List[Product]:
+) -> Product:
     """
     Creates Product model in the database.
 
@@ -63,10 +63,7 @@ async def create_product_model(
     """
     await product_dao.create(product=new_product_object.dict())
     created = await product_dao.filter(keyword=new_product_object.name, prod_type=ProductType[new_product_object.item_type])
-    return {
-        "edited": created,
-        "status": "complete"
-    }
+    return created[0]
 
 
 @router.post("/update/")
@@ -83,7 +80,7 @@ async def update_product_model(
     :return `edited`: updated object
     :return `status`: status
     """
-    updated = await product_dao.update(product=product_object)
+    updated = await product_dao.update(product=product_object) # type: ignore
     return {
         "edited": updated,
         "status": "complete"

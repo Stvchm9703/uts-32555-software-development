@@ -2,39 +2,55 @@ from typing import List, Optional, Union
 from yummy_pizza_api_service.db.models.order_model import Order, OrderType, OrderStatus, OrderDeliveryType
 from yummy_pizza_api_service.db.models.order_product_model import OrderProduct
 from yummy_pizza_api_service.db.models.order_product_option_model import OrderProductOption
-from yummy_pizza_api_service.db.models.product_model import Product, ProductType
-from yummy_pizza_api_service.db.models.product_option_model import ProductOption, ProductOptionKind
+# from yummy_pizza_api_service.db.models.product_model import Product, ProductType
+# from yummy_pizza_api_service.db.models.product_option_model import ProductOption, ProductOptionKind
 import json
-
+from datetime import datetime
 
 class OrderDAO:
-    """Class for accessing dummy table."""
 
     async def create(
             self,
             order: dict
-    ) -> None:
-        # if 'options' in product and product['options'] != None:
-        #     new_product_options = []
-        #     for item in product['options']:
-        #         prof_option = ProductOption(**item)
-        #         new_product_options.append(prof_option)
-        #     # print(new_product_options)
-        #     new_product = Product(**{**product, 'options': new_product_options})
-        #     await new_product.save_related(follow=True, save_all=True)
-        # else:
-        #     new_product = Product(**product)
-        #     await new_product.save_related(follow=True, save_all=True)
+    ) -> Order:
+        """
+        Create a new order in the database.
 
-        new_order = Order(**order)
-        await new_order.save_related(follow=True, save_all=True)
-        return
+        :param order: The order to create.
+        :type order: dict
+        :return: None
+        :rtype: None
+        """
+        latest_order = await Order.objects.order_by("-order_number").get_or_none()
+        order_num = 1
+        if latest_order != None and latest_order.order_number != 999:
+            order_num = latest_order.order_number + 1
 
-    async def get(self, id=int) -> Order:
+        deliver_type = OrderDeliveryType.dine_in.value
+        if order['deliver_type'] != None and order['deliver_type'] in OrderDeliveryType._value2member_map_:
+            deliver_type = order['deliver_type']
+
+        return await Order.objects.create(**{
+            **order,
+            'deliver_type': deliver_type,
+            'order_number': order_num,
+            'status': OrderStatus.created.value
+        })
+       
+
+    async def get(self, id=int) -> Optional[Order]:
         return await Order.objects.select_all(follow=True).get_or_none(id=id)
-        return
 
     async def get_latest_order(self, limit: int = 15, offset: int = 0) -> List[Order]:
+        """
+        Retrieve an Order object by its id.
+
+        :param id: The id of the Order object to retrieve.
+        :type id: int
+
+        :return: The Order object with the given id, or None if it does not exist.
+        :rtype: Optional[Order]
+        """
         return await Order.objects\
             .select_all()\
             .order_by("-created_date")\
@@ -44,80 +60,200 @@ class OrderDAO:
 
     async def filter(
         self,
-        query: dict = {},
         limit: int = 15,
-        offset: int = 0
+        offset: int = 0,
+        **search_query
     ) -> List[Order]:
         """
-        Get specific dummy model.
+        Filters Order objects based on the provided search query.
 
-        :param name: name of dummy instance.
-        :return: dummy models.
+        :param limit: The maximum number of objects to return. Defaults to 15.
+        :type limit: int
+        :param offset: The number of objects to skip before starting to return them. Defaults to 0.
+        :type offset: int
+        :param search_query: A dictionary containing the search parameters. Can include any of the following keys:
+            - id (int): The ID of the order.
+            - keyword (str): A search string to match against the customer name or address.
+            - staff (str): The name of the staff member associated with the order.
+            - customer_contact (str): The contact information of the customer.
+            - order_number (str): The order number.
+            - status (str): The status of the order.
+        :type search_query: dict
+        :return: A list of Order objects that match the search query.
+        :rtype: List[Order]
         """
         query = Order.objects.select_all(follow=True)
-        if 'id' in query:
+        if 'id' in search_query:
             query = query.filter(
-                Order.id == (query['id'])
+                Order.id == (search_query['id'])
             )
-        if 'keyword' in query:
+        if 'keyword' in search_query:
             # query = query.filter(ProductModel.name == keyword)
             query = query.filter(
-                Order.customer_name.contains(query['keyword'])
-                | Order.customer_address.contains(query['keyword'])
+                Order.customer_name.icontains(search_query['keyword'])
+                | Order.customer_address.icontains(search_query['keyword'])
             )
-        if 'staff' in query:
+        if 'staff' in search_query:
             query = query.filter(
-                Order.customer_name.contains(query['staff'])
+                Order.staff.icontains(search_query['staff'])
             )
-        if 'customer_contact' in query:
+        if 'customer_contact' in search_query:
             query = query.filter(
-                Order.customer_contact.contains(query['customer_contact'])
+                Order.customer_contact == search_query['customer_contact']
             )
-        if 'order_number' in query:
+        if 'order_number' in search_query:
             query = query.filter(
-                Order.order_number == query['order_number']
+                Order.order_number == search_query['order_number']
             )
-        if 'status' in query:
+        if 'status' in search_query:
             query = query.filter(
-                Order.status == query['status']
+                Order.status.icontains(search_query['status'])
             )
 
-        return await query.limit(limit).offset(offset).all()
+        kk = await query.limit(limit).offset(offset).all()
+        return kk
 
-    async def update(self, order: Order) -> None:
-        # tar = await Product.objects.select_all(follow=True).get(id=product.id)
-        # if tar:
-        #     await tar.update(**(product.dict()))
-        #     for item in product.options:
-        #         await ProductOption.objects.update_or_create(**(item.dict()), option_for_product=tar)
-        #     return tar.id
+    async def update(self, inupdated_order: Order) -> None:
+        """
+        Updates the database with the given order information.
+
+        :param order: The order object to update the database with.
+        :type order: Order
+
+        :returns: None
+        """
+        tar = await Order.objects.get_or_none.get(id=inupdated_order.id)
+        if tar:
+            await tar.update(**(inupdated_order.dict()))
+            for item in inupdated_order.items:
+                await OrderProduct.objects.update_or_create(**(item.dict()), for_order=tar)
+            return tar.id
         return None
 
-    async def delete(self, order: Order) -> None:
-        # tar = await Product.objects.select_all(follow=True).get(id=product.id)
-        # if tar:
-        #     tar_id = tar.id
-        #     # await ProductOption.objects.delete(option_for_product=tar)
-        #     await tar.options.clear(keep_reversed=False)
-        #     await tar.delete()
-        #     return tar_id
+    async def delete(self, order: Order) -> Optional[int]:
+        """
+        Deletes an order and returns its ID if it exists, otherwise returns None.
+
+        :param order: The order to be deleted.
+        :type order: Order
+        :return: The ID of the deleted order, or None if the order does not exist.
+        :rtype: Optional[int]
+        """
+        tar = await Order.objects.get_or_none(id=order.id)
+        if tar:
+            tar_id = tar.id
+            await tar.load_all()
+            await tar.items.clear(keep_reversed=False)
+            await tar.delete()
+            return tar_id
         return None
 
-    async def delete_by_id(self, order_id: int) -> None:
-        # tar = await Product.objects.select_all(follow=True).get(id=product.id)
-        # if tar:
-        #     tar_id = tar.id
-        #     # await ProductOption.objects.delete(option_for_product=tar)
-        #     await tar.options.clear(keep_reversed=False)
-        #     await tar.delete()
-        #     return tar_id
+    async def delete_by_id(self, order_id: int) -> Optional[int]:
+        """
+        Deletes an order by its ID.
+
+        :param order_id: the ID of the order to delete.
+        :type order_id: int
+        :return: the ID of the deleted order or None if the order doesn't exist.
+        :rtype: Optional[int]
+        """
+        tar = await Order.objects.select_all(follow=True).get_or_none(id=order_id)
+        if tar:
+            tar_id = tar.id
+            await tar.load_all()
+            await tar.items.clear(keep_reversed=False)
+            await tar.delete()
+            return tar_id
         return None
 
-    async def add_item(self, order: Order, new_products: OrderProduct) -> Order:
-        return None
+    async def void_order(self, order_id: int) -> Optional[Order]:
+        """
+        Void the order with the given ID and return it if it exists.
 
-    async def remove_item(self):
-        return None
+        :param order_id: An integer representing the ID of the order to be voided.
+        :return: An instance of Order representing the voided order, or None if the order doesn't exist.
+        """
+        tar = await Order.objects.get_or_none(id = order_id)
+        if tar:
+            await tar.update_status(OrderStatus.void)
+        return tar
+
+    async def complete_order(self, order_id: int) -> Optional[Order]:
+        """
+        Completes an order by updating its status, requesting payment, and loading all related data.
+
+        :param order_id: The ID of the order to complete.
+        :type order_id: int
+        :return: The completed order, or None if it was not found.
+        :rtype: Optional[Order]
+        """
+        tar = await Order.objects.get_or_none(id=order_id)
+        if tar:
+            await tar.update_status(OrderStatus.completed)
+            # start payment 
+            await tar.request_payment()
+            await tar.load_all(follow=True)
+            # await tar.update()
+        return tar
+
+    """
+    # item related
+    """
+
+    async def add_item(self, base_order: Order, input_order_option: OrderProduct) -> Order:
+        """
+        Add an item to an existing order.
+
+        :param base_order: the existing order to add the item to
+        :type base_order: Order
+        :param input_order_option: the item to add to the order
+        :type input_order_option: OrderProduct
+        :return: the updated order with the added item
+        :rtype: Order
+        :raises: Exception if the provided base_order does not exist
+        """
+        existed = None
+        if base_order.id != None:
+            existed = await Order.objects.get_or_none(id=base_order.id)
+        elif base_order.order_number != None:
+            existed = await Order.objects.get_or_none(order_number=base_order.order_number)
+
+        if existed is None:
+            raise "request order is not single one"  # type: ignore
+
+        await OrderProduct.objects.create(**input_order_option.dict(), for_order=existed)
+
+        return await existed.load_all(follow=True)
+
+    async def remove_item(self, base_order: Order, input_order_option: OrderProduct) -> Order:
+        """
+        Remove an item from an existing order.
+
+        :param base_order: The existing order to remove an item from.
+        :type base_order: Order
+        :param input_order_option: The item to remove from the order.
+        :type input_order_option: OrderProduct
+        :return: The updated order object with the item removed.
+        :rtype: Order
+        :raises str: If the request order is not a single one.
+        """
+
+        existed = None
+        if base_order.id != None:
+            existed = await Order.objects.get_or_none(id=base_order.id)
+        elif base_order.order_number != None:
+            existed = await Order.objects.get_or_none(order_number=base_order.order_number)
+
+        if existed is None:
+            raise "request order is not single one"  # type: ignore
+
+        await existed.load_all(follow=True)
+        for option_prod in existed.items:
+            if option_prod.id == input_order_option.id:
+                await OrderProduct.objects.filter(id=input_order_option.id).delete()
+        # existed.save_related()
+        await existed.load_all(follow=True)
+        return existed
 
     async def update_item(self, order: Order, tar_item: OrderProduct):
         return None

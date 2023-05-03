@@ -10,7 +10,7 @@ from yummy_pizza_api_service.db.base import BaseMeta, BaseModel
 # from yummy_pizza_api_service.db.models.product_option_model import ProductOption
 from yummy_pizza_api_service.db.models.transaction_model import Transaction
 
-from yummy_pizza_api_service.services.redis.models.order_model import OrderType, OrderStatus, OrderDeliveryType
+from yummy_pizza_api_service.db.models.order_model import OrderType, OrderStatus, OrderDeliveryType
 
 
 class OrderReceipt(BaseModel):

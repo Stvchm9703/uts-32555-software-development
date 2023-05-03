@@ -9,7 +9,7 @@ class ProductDAO:
 
     async def create(
             self,
-            product: Union[Product, dict]
+            product: dict
     ) -> None:
         """
         ### Create product with data. ###
@@ -30,7 +30,7 @@ class ProductDAO:
             await new_product.save_related(follow=True, save_all=True)
         return
 
-    async def get(self, id=int) -> Product:
+    async def get(self, id=int) -> Optional[Product]:
         """
         ### Get product by product id. ###
         :param id : record's id
@@ -98,17 +98,28 @@ class ProductDAO:
 
         return await query.limit(limit).offset(offset).all()
 
-    async def update(self, product: Product) -> None:
+    async def update(self, product: Product) -> Optional[Product]:
+        """
+        Updates a product in the database with the given product object. Returns the updated product
+        if successful, or None if the product with the given ID does not exist in the database.
+
+        :param product: The product object with updated properties.
+        :type product: Product
+
+        :return: The updated product object if successful, or None if the product with
+            the given ID does not exist in the database.
+        :rtype: Optional[Product]
+        """
         tar = await Product.objects.select_all(follow=True).get(id=product.id)
         if tar:
             await tar.update(**(product.dict()))
             print('here')
             for item in product.options:
                 await ProductOption.objects.update_or_create(**(item.dict()), option_for_product=tar)
-            return tar.id
+            return tar
         return None
 
-    async def delete(self, product: Product) -> None:
+    async def delete(self, product: Product) -> Optional[int]:
         """
         delete product
 

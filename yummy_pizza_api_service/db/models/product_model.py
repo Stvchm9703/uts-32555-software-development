@@ -44,4 +44,7 @@ class Product(BaseModel):
 
     @property
     def full_price_value(self) -> float:
+        """
+        to calculate the full price
+        """
         return (1 + self.rate) * self.price_value

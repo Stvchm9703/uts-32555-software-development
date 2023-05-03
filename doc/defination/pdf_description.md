@@ -82,3 +82,34 @@ Group Booking
 1. The customer pays for their order by cash or by debit and credit card.
 1. The group enjoys their meal, and at the end of the meal, they can either take away any leftover food or leave it for the restaurant staff to dispose of.
 1. The customer leaves the restaurant.
+
+- Pizza size: small (8 inch), large (11 inch), extra-large (12 inch)
+- Pizza base: traditional, wholemeal, gluten-free
+- Pizza sauce: tomato sauce or BBQ sauce
+- Pizza toppings:
+  - Supreme
+  - Sausage sizzle
+  - Hawaiian
+  - Chicken
+    - Sweet chilli chicken
+    - Peri-peri chicken
+  - Veggie lovers'
+    - Garden goodness
+    - Vegan cheese
+Calorie intake displayed for each pizza option.
+
+side option
+- Garlic bread
+- Breadsticks
+- Salad
+- French fries
+- Onion rings
+- Mozzarella sticks
+- Chicken wings
+- Grilled vegetables
+- Potato wedges
+- Coleslaw
+
+Pasta option
+- creamy mushroom pasta 
+- classic Bolognese pasta. 

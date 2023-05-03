@@ -36,7 +36,7 @@ class Transaction(BaseModel):
     class Meta(BaseMeta):
         tablename = "transaction"
 
-    def request_payment(self, t_payment_type: PaymentType = PaymentType.cash) -> bool:
+    def complete_payment(self, t_payment_type: PaymentType = PaymentType.cash) -> bool:
         # self.payment_type = t_payment_type
         # if t_payment_type == PaymentType.cash:
         #     self.payment_status = TransactionStatus.paid

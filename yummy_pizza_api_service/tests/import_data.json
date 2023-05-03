@@ -1,0 +1,379 @@
+[
+  {
+    "name": "Supreme Pizza",
+    "description": "pizza description",
+    "item_type": "single",
+    "category": "pizza,chicken,meat",
+    "kal": 1000.2,
+    "price_value": 1.23,
+    "rate": 0.015,
+    "options": [
+      {
+        "name": "pizza saurce",
+        "description": "pizza saurce",
+        "extra_charge": 1.2,
+        "option_kind": "favour",
+        "kal": 120,
+        "option_sets": [
+          "Tomato sauce",
+          "BBQ sauce"
+        ]
+      },
+      {
+        "name": "Pizza size",
+        "description": "pizza size",
+        "extra_charge": 1.2,
+        "option_kind": "size",
+        "max_count": 2,
+        "min_count": -1,
+        "kal": 120,
+        "option_sets": [
+          "small (8 Inch)",
+          "Large (11 Inch)",
+          "Extra Large (12 Inch)"
+        ]
+      },
+      {
+        "name": "Meat amount",
+        "description": "Meat on top of pizza, it can be extra with numbers of 500 grams.",
+        "extra_charge": 1.25,
+        "option_kind": "number_count",
+        "max_count": 5,
+        "min_count": 0,
+        "kal": 130
+      }
+    ]
+  },
+  {
+    "name": "Sausage sizzle Pizza",
+    "description": "pizza description",
+    "item_type": "single",
+    "category": "pizza,sausage",
+    "kal": 1000.2,
+    "price_value": 1.23,
+    "rate": 0.015,
+    "options": [
+      {
+        "name": "pizza saurce",
+        "description": "pizza saurce",
+        "extra_charge": 1.2,
+        "option_kind": "favour",
+        "kal": 120,
+        "option_sets": [
+          "Tomato sauce",
+          "BBQ sauce"
+        ]
+      },
+      {
+        "name": "Pizza size",
+        "description": "pizza size",
+        "extra_charge": 1.2,
+        "option_kind": "size",
+        "max_count": 2,
+        "min_count": -1,
+        "kal": 120,
+        "option_sets": [
+          "small (8 Inch)",
+          "Large (11 Inch)",
+          "Extra Large (12 Inch)"
+        ]
+      },
+      {
+        "name": "Sausage amount",
+        "description": "Sausage on top of pizza, it can be extra with numbers of 500 grams.",
+        "extra_charge": 1.25,
+        "option_kind": "number_count",
+        "max_count": 5,
+        "min_count": 0,
+        "kal": 130
+      }
+    ]
+  },
+  {
+    "name": "Hawaiian sizzle Pizza",
+    "description": "pizza description",
+    "item_type": "single",
+    "category": "pizza,ham",
+    "kal": 1000.2,
+    "price_value": 1.23,
+    "rate": 0.015,
+    "options": [
+      {
+        "name": "pizza saurce",
+        "description": "pizza saurce",
+        "extra_charge": 1.2,
+        "option_kind": "favour",
+        "kal": 120,
+        "option_sets": [
+          "Tomato sauce",
+          "BBQ sauce"
+        ]
+      },
+      {
+        "name": "Pizza size",
+        "description": "pizza size",
+        "extra_charge": 1.2,
+        "option_kind": "size",
+        "max_count": 2,
+        "min_count": -1,
+        "kal": 120,
+        "option_sets": [
+          "small (8 Inch)",
+          "Large (11 Inch)",
+          "Extra Large (12 Inch)"
+        ]
+      },
+      {
+        "name": "Ham amount",
+        "description": "Ham on top of pizza, it can be extra with numbers of 500 grams.",
+        "extra_charge": 1.25,
+        "option_kind": "number_count",
+        "max_count": 5,
+        "min_count": 0,
+        "kal": 130
+      },
+      {
+        "name": "Pineapple amount",
+        "description": "Pineapple on top of pizza, it can be extra with numbers of 500 grams.",
+        "extra_charge": 1.25,
+        "option_kind": "number_count",
+        "max_count": 5,
+        "min_count": 0,
+        "kal": 130
+      }
+    ]
+  },
+  {
+    "name": "Chicken Pizza",
+    "description": "pizza description",
+    "item_type": "single",
+    "category": "pizza,chicken",
+    "kal": 1000.2,
+    "price_value": 1.23,
+    "rate": 0.015,
+    "options": [
+      {
+        "name": "Pizza saurce",
+        "description": "pizza saurce",
+        "extra_charge": 1.2,
+        "option_kind": "favour",
+        "kal": 120,
+        "option_sets": [
+          "Tomato sauce",
+          "BBQ sauce"
+        ]
+      },
+      {
+        "name": "Pizza size",
+        "description": "pizza size",
+        "extra_charge": 1.2,
+        "option_kind": "size",
+        "max_count": 2,
+        "min_count": -1,
+        "kal": 120,
+        "option_sets": [
+          "small (8 Inch)",
+          "Large (11 Inch)",
+          "Extra Large (12 Inch)"
+        ]
+      },
+      {
+        "name": "Chicken amount",
+        "description": "Chicken on top of pizza, it can be extra with numbers of 500 grams.",
+        "extra_charge": 1.25,
+        "option_kind": "number_count",
+        "max_count": 5,
+        "min_count": 0,
+        "kal": 130
+      },
+      {
+        "name": "Chicken favor",
+        "description": "Chicken on top of pizza, it can be extra with numbers of 500 grams.",
+        "extra_charge": 1.25,
+        "option_kind": "favour",
+        "max_count": 5,
+        "min_count": 0,
+        "kal": 130,
+        "option_sets": [
+          "Sweet chilli chicken",
+          "Peri-peri chicken"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Veggie lovers' Pizza",
+    "description": "pizza description",
+    "item_type": "single",
+    "category": "pizza,veggie",
+    "kal": 1000.2,
+    "price_value": 1.23,
+    "rate": 0.015,
+    "options": [
+      {
+        "name": "Pizza saurce",
+        "description": "pizza saurce",
+        "extra_charge": 1.2,
+        "option_kind": "favour",
+        "kal": 120,
+        "option_sets": [
+          "Tomato sauce",
+          "BBQ sauce"
+        ]
+      },
+      {
+        "name": "Pizza size",
+        "description": "pizza size",
+        "extra_charge": 1.2,
+        "option_kind": "size",
+        "max_count": 2,
+        "min_count": -1,
+        "kal": 120,
+        "option_sets": [
+          "small (8 Inch)",
+          "Large (11 Inch)",
+          "Extra Large (12 Inch)"
+        ]
+      },
+      {
+        "name": "Chicken amount",
+        "description": "Chicken on top of pizza, it can be extra with numbers of 500 grams.",
+        "extra_charge": 1.25,
+        "option_kind": "number_count",
+        "max_count": 5,
+        "min_count": 0,
+        "kal": 130
+      },
+      {
+        "name": "Chicken favor",
+        "description": "Chicken on top of pizza, it can be extra with numbers of 500 grams.",
+        "extra_charge": 1.25,
+        "option_kind": "favour",
+        "max_count": 5,
+        "min_count": 0,
+        "kal": 130,
+        "option_sets": [
+          "Garden goodness",
+          "Vegan cheese"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Garlic bread",
+    "description": "Garlic bread description",
+    "item_type": "side",
+    "category": "side,bread",
+    "kal": 120.5,
+    "price_value": 4.23,
+    "rate": 0.015
+  },
+  {
+    "name": "Breadsticks",
+    "description": "Breadsticks description",
+    "item_type": "side",
+    "category": "side,bread",
+    "kal": 220.5,
+    "price_value": 4.23,
+    "rate": 0.015
+  },
+  {
+    "name": "Salad",
+    "description": "Salad description",
+    "item_type": "side",
+    "category": "side",
+    "kal": 220.5,
+    "price_value": 4.23,
+    "rate": 0.015
+  },
+  {
+    "name": "French fries",
+    "description": "French fries description",
+    "item_type": "side, fries",
+    "category": "side",
+    "kal": 220.5,
+    "price_value": 4.23,
+    "rate": 0.015
+  },
+  {
+    "name": "French fries",
+    "description": "French fries description",
+    "item_type": "side, fries",
+    "category": "side",
+    "kal": 220.5,
+    "price_value": 4.23,
+    "rate": 0.015
+  },
+  {
+    "name": "Onion rings",
+    "description": "Onion rings description",
+    "item_type": "side, fries",
+    "category": "side",
+    "kal": 220.5,
+    "price_value": 4.23,
+    "rate": 0.015
+  },
+  {
+    "name": "Mozzarella sticks",
+    "description": "Mozzarella sticks description",
+    "item_type": "side, fries",
+    "category": "side",
+    "kal": 220.5,
+    "price_value": 4.23,
+    "rate": 0.015
+  },
+  {
+    "name": "Chicken wings",
+    "description": "Chicken wings description",
+    "item_type": "side,chicken",
+    "category": "side",
+    "kal": 220.5,
+    "price_value": 4.23,
+    "rate": 0.015
+  },
+   {
+    "name": "Grilled vegetables",
+    "description": "Chicken wings description",
+    "item_type": "side,fries",
+    "category": "side",
+    "kal": 220.5,
+    "price_value": 4.23,
+    "rate": 0.015
+  },
+  {
+    "name": "Potato wedges",
+    "description": "Potato wedges description",
+    "item_type": "side,fries",
+    "category": "side",
+    "kal": 220.5,
+    "price_value": 4.23,
+    "rate": 0.015
+  },
+  {
+    "name": "Creamy mushroom pasta",
+    "description": "creamy mushroom pasta  description",
+    "item_type": "side,pasta",
+    "category": "side",
+    "kal": 220.5,
+    "price_value": 4.23,
+    "rate": 0.015
+  },
+  {
+    "name": "Classic Bolognese pasta",
+    "description": "Classic Bolognese pasta description",
+    "item_type": "side,pasta",
+    "category": "side",
+    "kal": 220.5,
+    "price_value": 4.23,
+    "rate": 0.015
+  },
+  {
+    "name": "Coke",
+    "description": "Coke description",
+    "item_type": "drink,pasta",
+    "category": "drink",
+    "kal": 220.5,
+    "price_value": 4.23,
+    "rate": 0.015
+  }
+]

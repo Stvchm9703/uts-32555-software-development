@@ -3,11 +3,19 @@ from datetime import datetime
 from uuid import UUID
 
 from pydantic import BaseModel
-from yummy_pizza_api_service.db.models.receipt_model import OrderType, OrderStatus, OrderDeliveryType, OrderReceipt
-from yummy_pizza_api_service.db.models.transaction_model import Transaction
-from yummy_pizza_api_service.services.redis.models.order_product_model import OrderProduct
+# from yummy_pizza_api_service.db.models.receipt_model import OrderType, OrderStatus, OrderDeliveryType, OrderReceipt
+# from yummy_pizza_api_service.db.models.transaction_model import Transaction
+# from yummy_pizza_api_service.db.models.order_product_model import OrderProduct
 
 from yummy_pizza_api_service.web.api.product.schema import ProductOptionModelDTO, ProductModelDTO, ProductModelInputDTO
+
+
+class OPTransactionDTO(BaseModel):
+    transaction_date: str
+    payment_type: str
+    payment_status: str
+    value: float
+    transaction_reference: str
 
 
 class OrderProductOptionDTO(BaseModel):
@@ -28,16 +36,15 @@ class OrderProductDTO(BaseModel):
 
 class OrderRefProductDTO(BaseModel):
     id: Optional[str]
-    order_id: Optional[str]
     order_number: Optional[int]
     quality: Optional[int]
     product: Optional[ProductModelInputDTO]
-    extra_option: Optional[List[OrderProductOptionDTO]]
+    extra_options: Optional[List[OrderProductOptionDTO]]
     remark: Optional[str]
 
 
 class OrderDTO(BaseModel):
-    id: str
+    id: int
     # created_date: Optional[datetime]
     # updated_date: Optional[datetime]
     contact_type: str
@@ -52,11 +59,11 @@ class OrderDTO(BaseModel):
     staff: str
     items: Optional[List[OrderProductDTO]]
 
-    # transaction: Optional[Transaction]
+    transaction: Optional[OPTransactionDTO]
 
 
 class OrderInputDTO(BaseModel):
-    id: Optional[str]
+    id: Optional[int]
     contact_type: Optional[str]
     status: Optional[str]
     deliver_type: Optional[str]
