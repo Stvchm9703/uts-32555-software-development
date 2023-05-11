@@ -12,15 +12,16 @@ class TableAppointment(BaseModel):
     """
     __table_args__ = {'extend_existing': True}
 
-    appointment_reference: str = ormar.String(max_length=120)
-
+    appointment_reference: str = ormar.String(max_length=120, nullalbe=True)
+    order_number: int = ormar.Integer()
     customer_name: str = ormar.String(max_length=500)
     customer_contact: int = ormar.Integer()
-    customer_address: str = ormar.String(max_length=500)
+    customer_address: str = ormar.String(max_length=500, nullalbe=True)
     people_count: int = ormar.Integer()
 
     staff: str = ormar.String(max_length=200)
-    timeslot: datetime = ormar.DateTime()
+    timeslot_start: datetime = ormar.DateTime()
+    timeslot_end: datetime = ormar.DateTime()
     transaction: Optional[Transaction] = ormar.ForeignKey(
         Transaction, skip_reverse=True)
 

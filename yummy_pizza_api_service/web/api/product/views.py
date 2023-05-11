@@ -1,23 +1,28 @@
 from typing import List
 
-from fastapi import APIRouter
+from fastapi import APIRouter, status
 from fastapi.param_functions import Depends
+from fastapi.responses import JSONResponse
 
 from yummy_pizza_api_service.db.dao.product_dao import ProductDAO
 from yummy_pizza_api_service.db.models.product_model import Product, ProductType
 from yummy_pizza_api_service.web.api.product.schema import (
     ProductModelDTO, ProductModelInputDTO, ProductModelSearchInputDTO
 )
+from yummy_pizza_api_service.web.api.based import MESSAGE_SETTING, Message
 
 router = APIRouter()
 
 
-@router.get("/", response_model=List[ProductModelDTO])
+@router.get("/",
+            response_model=List[ProductModelDTO],
+            responses={**MESSAGE_SETTING}  # type: ignore
+            )
 async def get_product_models(
     limit: int = 15,
     offset: int = 0,
     product_dao: ProductDAO = Depends(),
-) -> List[Product]:
+):
     """
     Retrieve all product objects from the database.
 
@@ -29,14 +34,20 @@ async def get_product_models(
 
     :return: list of product objects from database.
     """
-    return await product_dao.get_all_products(limit=limit, offset=offset)
+    try:
+        return await product_dao.get_all_products(limit=limit, offset=offset)
+    except Exception as e:
+        return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content=Message(status="error", reason=str(e)).dict())
 
 
-@router.post("/search/", response_model=List[ProductModelDTO])
+@router.post("/search/",
+             response_model=List[ProductModelDTO],
+             responses={**MESSAGE_SETTING}  # type: ignore
+             )
 async def filter_product_models(
     query: ProductModelSearchInputDTO,
     product_dao: ProductDAO = Depends(),
-) -> List[Product]:
+):
     """
     Get all product objects with filter params from the database.
 
@@ -44,14 +55,20 @@ async def filter_product_models(
 
     :return: list of product objects from database.
     """
-    return await product_dao.filter(**query)
+    try:
+        return await product_dao.filter(**query.dict())
+    except Exception as e:
+        return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content=Message(status="error", reason=str(e)).dict())
 
 
-@router.post("/create/")
+@router.post("/create/",
+             response_model=ProductModelDTO,
+             responses={**MESSAGE_SETTING}  # type: ignore
+             )
 async def create_product_model(
     new_product_object: ProductModelInputDTO,
     product_dao: ProductDAO = Depends(),
-) -> Product:
+):
     """
     Creates Product model in the database.
 
@@ -61,16 +78,22 @@ async def create_product_model(
     :return `edited`: new created object
     :return `status` : status 
     """
-    await product_dao.create(product=new_product_object.dict())
-    created = await product_dao.filter(keyword=new_product_object.name, prod_type=ProductType[new_product_object.item_type])
-    return created[0]
+    try:
+        await product_dao.create(product=new_product_object.dict())
+        created = await product_dao.filter(keyword=new_product_object.name, prod_type=new_product_object.item_type)
+        return created[0]
+    except Exception as e:
+        return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content=Message(status="error", reason=str(e)).dict())
 
 
-@router.post("/update/")
+@router.post("/update/",
+             response_model=Message,
+             responses={**MESSAGE_SETTING}
+             )
 async def update_product_model(
     product_object: ProductModelInputDTO,
     product_dao: ProductDAO = Depends(),
-) -> dict:
+):
     """
     Update Product model in the database.
 
@@ -80,18 +103,24 @@ async def update_product_model(
     :return `edited`: updated object
     :return `status`: status
     """
-    updated = await product_dao.update(product=product_object) # type: ignore
-    return {
-        "edited": updated,
-        "status": "complete"
-    }
+    try:
+        updated = await product_dao.update(product=product_object)  # type: ignore
+        return Message(
+            edited=updated,
+            status="complete"
+        )  # type: ignore
+    except Exception as e:
+        return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content=Message(status="error", reason=str(e)).dict())
 
 
-@router.post("/delete/")
+@router.post("/delete/",
+             response_model=Message,
+             responses={**MESSAGE_SETTING}
+             )
 async def delete_product_model(
     product_object: ProductModelInputDTO,
     product_dao: ProductDAO = Depends(),
-) -> dict:
+):
     """
     Delete Product model within the database.
 
@@ -101,8 +130,11 @@ async def delete_product_model(
     :return `edited`: deleted object
     :return `status`: status
     """
-    deleted = await product_dao.delete(product=product_object)
-    return {
-        "edited": deleted,
-        "status": "complete"
-    }
+    try:
+        deleted = await product_dao.delete(product=Product(**product_object.dict()))
+        return Message(
+            edited=deleted,
+            status="complete"
+        )  # type: ignore
+    except Exception as e:
+        return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content=Message(status="error", reason=str(e)).dict())

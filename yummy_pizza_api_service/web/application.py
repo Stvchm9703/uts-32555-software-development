@@ -6,6 +6,8 @@ import sentry_sdk
 from fastapi import FastAPI
 from fastapi.responses import UJSONResponse
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
+
 from sentry_sdk.integrations.fastapi import FastApiIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
 # from tortoise.contrib.fastapi import register_tortoise
@@ -21,6 +23,11 @@ from yummy_pizza_api_service.web.lifetime import (
 )
 
 APP_ROOT = Path(__file__).parent.parent
+
+APP_ORIGINS = [
+    # APP endpoint
+    "http://localhost:1420", 
+]
 
 
 def get_app() -> FastAPI:
@@ -55,6 +62,14 @@ def get_app() -> FastAPI:
         redoc_url=None,
         openapi_url="/api/openapi.json",
         default_response_class=UJSONResponse,
+    )
+
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=APP_ORIGINS,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
     )
 
     # Adds startup and shutdown events.

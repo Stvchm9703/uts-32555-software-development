@@ -19,7 +19,7 @@ class OPTransactionDTO(BaseModel):
 
 
 class OrderProductOptionDTO(BaseModel):
-    id: Optional[str]
+    id: Optional[int]
     option: Optional[str]
     count: Optional[int]
     charge: Optional[float]
@@ -27,7 +27,7 @@ class OrderProductOptionDTO(BaseModel):
 
 
 class OrderProductDTO(BaseModel):
-    id: Optional[str]
+    id: Optional[int]
     quality: Optional[int]
     product: ProductModelInputDTO
     extra_option: Optional[List[OrderProductOptionDTO]]

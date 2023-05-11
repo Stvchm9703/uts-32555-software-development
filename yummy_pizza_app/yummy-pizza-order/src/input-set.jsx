@@ -1,4 +1,13 @@
-const InputField = () => {
+import { createSignal } from "solid-js";
+
+const InputField = ({ onSearchEnter }) => {
+
+  let input_ref;
+  const onSearchClick = () => {
+    onSearchEnter && onSearchEnter(input_ref.value);
+  }
+  const onInputEnter = (e) => (e.key === 'Enter') && onSearchClick();
+
   return (
     <div
       class="rounded  flex flex-col gap-2.5 items-start justify-start shrink-0 w-full relative"
@@ -31,14 +40,16 @@ const InputField = () => {
           />
         </svg>
 
-        <input 
+        <input
+          ref={input_ref}
           class="text-slate-400 bg-slate-100 text-left relative shrink-0 grow-1 border-0 h-10"
           type="search"
           placeholder="Type a command or search..."
+          onKeyDown={onInputEnter}
         >
           Type a command or search...
         </input>
-        <button class="text-white  font-medium rounded-md text-sm px-4 py-1 bg-slate-900">Search</button>
+        <button class="text-white  font-medium rounded-md text-sm px-4 py-1 bg-slate-900" onClick={onSearchClick}>Search</button>
       </div>
     </div>
 

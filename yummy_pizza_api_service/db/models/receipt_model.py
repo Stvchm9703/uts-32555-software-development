@@ -22,9 +22,9 @@ class OrderReceipt(BaseModel):
     status: str = ormar.String(max_length=250, choices=list(OrderStatus))
     deliver_type: str = ormar.String(max_length=250, choices=list(OrderDeliveryType))
 
-    customer_name: str = ormar.String(max_length=500)
-    customer_contact: int = ormar.Integer()
-    customer_address: str = ormar.String(max_length=500)
+    customer_name: str = ormar.String(max_length=500, nullable=True)
+    customer_contact: int = ormar.Integer(nullable=True)
+    customer_address: str = ormar.String(max_length=500, nullable=True)
     staff: str = ormar.String(max_length=200)
     remark: str = ormar.String(max_length=500)
     order_snapshot: Optional[pydantic.Json] = ormar.JSON(nullable=True)

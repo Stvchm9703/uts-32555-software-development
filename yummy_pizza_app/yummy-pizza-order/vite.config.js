@@ -4,12 +4,14 @@ import UnoCSS from "unocss/vite";
 import { presetUno } from "unocss";
 import { presetFlowbite } from "@julr/unocss-preset-flowbite";
 import { presetDaisy } from "unocss-preset-daisy";
+import { presetScrollbarHide } from 'unocss-preset-scrollbar-hide'
+
 // https://vitejs.dev/config/
 export default defineConfig(async () => ({
   plugins: [
     solidPlugin(),
     UnoCSS({
-      presets: [presetUno(), presetFlowbite() , presetDaisy()],
+      presets: [presetUno(), presetFlowbite() , presetDaisy(), presetScrollbarHide()],
     }),
   ],
 

@@ -13,7 +13,8 @@
   "license": "MIT",
   "dependencies": {
     "@tauri-apps/api": "^1.2.0",
-    "solid-js": "^1.7.3"
+    "solid-js": "^1.7.3",
+    "unocss-preset-scrollbar-hide": "^1.0.1"
   },
   "devDependencies": {
     "@julr/unocss-preset-flowbite": "^0.0.2",

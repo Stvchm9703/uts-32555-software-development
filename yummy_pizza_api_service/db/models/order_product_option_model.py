@@ -12,9 +12,9 @@ from yummy_pizza_api_service.db.models.order_product_model import OrderProduct
 class OrderProductOption(BaseModel):
     __table_args__ = {'extend_existing': True}
 
-    option: str = ormar.String(max_length=500)
-    count: int = ormar.Integer()
-    charge: float = ormar.Float()
+    option: str = ormar.String(max_length=500, nullable=True)
+    count: int = ormar.Integer(nullable=True)
+    charge: float = ormar.Float(nullable=True)
     option_referance: Optional[ProductOption] = ormar.ForeignKey(
         ProductOption,
         related_name="options",

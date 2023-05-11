@@ -7,6 +7,7 @@ from yummy_pizza_api_service.db.models.order_product_option_model import OrderPr
 import json
 from datetime import datetime
 
+
 class OrderDAO:
 
     async def create(
@@ -18,8 +19,8 @@ class OrderDAO:
 
         :param order: The order to create.
         :type order: dict
-        :return: None
-        :rtype: None
+        :return: Order
+        :rtype: Order
         """
         latest_order = await Order.objects.order_by("-order_number").get_or_none()
         order_num = 1
@@ -36,7 +37,6 @@ class OrderDAO:
             'order_number': order_num,
             'status': OrderStatus.created.value
         })
-       
 
     async def get(self, id=int) -> Optional[Order]:
         return await Order.objects.select_all(follow=True).get_or_none(id=id)
@@ -173,7 +173,7 @@ class OrderDAO:
         :param order_id: An integer representing the ID of the order to be voided.
         :return: An instance of Order representing the voided order, or None if the order doesn't exist.
         """
-        tar = await Order.objects.get_or_none(id = order_id)
+        tar = await Order.objects.get_or_none(id=order_id)
         if tar:
             await tar.update_status(OrderStatus.void)
         return tar
@@ -190,7 +190,7 @@ class OrderDAO:
         tar = await Order.objects.get_or_none(id=order_id)
         if tar:
             await tar.update_status(OrderStatus.completed)
-            # start payment 
+            # start payment
             await tar.request_payment()
             await tar.load_all(follow=True)
             # await tar.update()
@@ -200,7 +200,7 @@ class OrderDAO:
     # item related
     """
 
-    async def add_item(self, base_order: Order, input_order_option: OrderProduct) -> Order:
+    async def add_item(self, base_order: dict, input_order_option: OrderProduct) -> Order:
         """
         Add an item to an existing order.
 
@@ -213,15 +213,18 @@ class OrderDAO:
         :raises: Exception if the provided base_order does not exist
         """
         existed = None
-        if base_order.id != None:
-            existed = await Order.objects.get_or_none(id=base_order.id)
-        elif base_order.order_number != None:
-            existed = await Order.objects.get_or_none(order_number=base_order.order_number)
+        if 'id' in base_order:
+            existed = await Order.objects.get_or_none(id=base_order['id'])
+        elif 'order_number' in base_order:
+            existed = await Order.objects.get_or_none(order_number=base_order['order_number'])
 
         if existed is None:
             raise "request order is not single one"  # type: ignore
 
-        await OrderProduct.objects.create(**input_order_option.dict(), for_order=existed)
+        await OrderProduct.objects.create(**{
+            **input_order_option.dict(),
+            'for_order': existed
+        })
 
         return await existed.load_all(follow=True)
 

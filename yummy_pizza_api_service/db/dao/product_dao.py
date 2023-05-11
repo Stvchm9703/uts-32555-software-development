@@ -57,43 +57,53 @@ class ProductDAO:
 
     async def filter(
         self,
-        keyword: str = None,
-        prod_type: ProductType = None,
-        price_max_range: float = None,
-        price_min_range: float = None,
         limit: int = 15,
-        offset: int = 0
+        offset: int = 0,
+        **search_query
     ) -> List[Product]:
         """
         ### Get specific product models. ###
-        :param keyword: search with any name or description of product instance.
-        :param prod_type: search with specific item-type, see also : `ProductType`
-        :param price_max_range : search with maximium cap of price
-        :param price_min_range : search with minimium cap of price
-        :param limit : limit the records result in a number
-        :param offset : skip a offset row count for the records
-        :return: product models (`List[Product]`).
+        Filters products based on the given search query and returns a list of products.
+
+        :param limit: The maximum number of products to return. Default is 15.
+        :type limit: int
+        :param offset: The number of products to offset the start of the returned list. Default is 0.
+        :type offset: int
+        :param search_query: A dictionary containing the search parameters.
+        :type search_query: dict
+            - `keyword` (str): A string to search for in the product name or description.
+            - `prod_type` (str): The product type to filter by.
+            - `price_max_range` (float): The maximum product price value.
+            - `price_min_range` (float): The minimum product price value.
+        :return: A list of Product objects based on the search query.
+        :rtype: List[Product]
+
 
         filter with provided params
         """
+
         query = Product.objects.select_all(follow=True)
-        if keyword:
+        if 'id' in search_query:
+            query = query.filter(
+                Product.id == (search_query['id'])
+            )
+        if 'keyword' in search_query:
             # query = query.filter(ProductModel.name == keyword)
             query = query.filter(
-                Product.name.contains(keyword)
-                | Product.description.contains(keyword)
+                Product.name.icontains(search_query['keyword'])
+                | Product.description.icontains(search_query['keyword'])
             )
-        if prod_type:
+        if 'prod_type' in search_query:
             query = query.filter(
-                Product.item_type == prod_type.value
+                Product.item_type == search_query['prod_type']
             )
-        if price_max_range:
+        if 'price_max_range' in search_query:
             query = query.filter(
-                Product.price_value <= price_max_range
+                Product.price_value <= search_query['price_max_range']
             )
-        if price_min_range:
+        if 'price_min_range' in search_query:
             query = query.filter(
-                Product.price_value >= price_min_range
+                Product.price_value >= search_query['price_min_range']
             )
 
         return await query.limit(limit).offset(offset).all()
@@ -126,7 +136,6 @@ class ProductDAO:
         :params product: Product like object
 
         """
-
         tar = await Product.objects.select_all(follow=True).get(id=product.id)
         if tar:
             tar_id = tar.id

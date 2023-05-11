@@ -1,9 +1,9 @@
 export default ({ children, isActive, onCloseClick, title, onConfirmClick, onCancelClick }) => {
 
   return (
-    <div id="extralarge-modal" tabindex="-1" class="fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
-      <div class="relative w-full max-w-7xl max-h-full m-auto">
-        <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+    <div id="extralarge-modal" tabindex="-1" class="fixed inset-0 z-50 w-full p-4 overflow-hidden h-[calc(100%-1rem)] max-h-screen">
+      <div class="relative w-full max-w-7xl max-h-screen m-auto">
+        <div class="bg-white rounded-lg shadow dark:bg-gray-700">
           <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-gray-600">
             <h3 class="text-xl font-medium text-gray-900 dark:text-white">
               {title}
@@ -13,7 +13,7 @@ export default ({ children, isActive, onCloseClick, title, onConfirmClick, onCan
               <span class="sr-only">Close modal</span>
             </button>
           </div>
-          <div class="p-6 space-y-6">
+          <div class="p-6 space-y-6  flex max-h-80vh">
             {children}
           </div>
           <div class="flex items-center justify-center p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600">

@@ -1,5 +1,6 @@
 import json
 import pytest
+import httpx
 import unittest
 
 from typing import List
@@ -15,8 +16,7 @@ from yummy_pizza_api_service.db.dao.order_dao import OrderDAO
 from yummy_pizza_api_service.db.models.order_model import OrderType, OrderStatus, OrderDeliveryType
 
 
-async def prebuild_products() -> List[Product]:
-    dao = ProductDAO()
+async def prebuild_products(fastapi_app, client) -> List[Product]:
     test_object = {
         'name': "pizza-b",
         'description': 'suprema pizza, with extra meat',
@@ -64,9 +64,11 @@ async def prebuild_products() -> List[Product]:
             },
         ]
     }
-    await dao.create(test_object)
+    # await dao.create(test_object)
+    await client.post(fastapi_app.url_path_for("create_product_model"), json=test_object)
+    dao = ProductDAO()
     return await dao.filter(keyword=test_object['name'], limit=1)
-   
+
 
 @pytest.mark.anyio
 async def test_creation(
@@ -113,12 +115,12 @@ async def test_cancel(
         'customer_address': 'NSW 2070, St John st',
         'staff': 'steve',
     }
+
+    system_resp = await client.post(fastapi_app.url_path_for("create_order"), json=test_object)
     dao = OrderDAO()
-    await dao.create(**test_object)
     instances = await dao.filter(keyword=test_object['customer_name'])
     inst_obj = instances[0]
-
-    response = await client.post(url, json={**inst_obj.dict()})
+    response = await client.post(url, json=system_resp.json())
     assert response.status_code == status.HTTP_200_OK
     result = await dao.filter(id=inst_obj.id)
     assert result[0].status == OrderStatus.void.value
@@ -129,13 +131,12 @@ async def test_add_item(
     fastapi_app: FastAPI,
     client: AsyncClient,
 ) -> None:
-    
 
     """Tests product instance creation."""
     url = fastapi_app.url_path_for("add_item")
 
     test_object = {
-        'contact_type': OrderType.phone_in.value,
+        'contact_type': 'phone_in',
         'deliver_type': 'dine_in',
         'customer_name': 'Albert.K',
         'customer_contact': 435623453,
@@ -144,16 +145,16 @@ async def test_add_item(
     }
     system_resp = await client.post(fastapi_app.url_path_for("create_order"), json=test_object)
     resp_dt = system_resp.json()
-    print(system_resp)
-    product_list = await prebuild_products()
+    # print(system_resp)
+    product_list = await prebuild_products(fastapi_app, client)
     response = await client.post(url, json={
         'id': resp_dt['id'],
         'product': {
             'id': product_list[0].id
         },
-        'extra_options' : [
+        'extra_options': [
             {
-                'id' : product_list[0].options[0].id,
+                'id': product_list[0].options[0].id,
                 'option': 'tomato sauce'
             }
         ],
@@ -165,4 +166,4 @@ async def test_add_item(
     instances = await dao.filter(id=resp_dt['id'])
     inst_obj = instances[0]
 
-    # assert inst_obj.items = 
+    # assert inst_obj.items =
