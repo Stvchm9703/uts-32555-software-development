@@ -2,9 +2,10 @@ from typing import List, Optional, Union
 from yummy_pizza_api_service.db.models.order_model import Order, OrderType, OrderStatus, OrderDeliveryType
 from yummy_pizza_api_service.db.models.order_product_model import OrderProduct
 from yummy_pizza_api_service.db.models.order_product_option_model import OrderProductOption
-# from yummy_pizza_api_service.db.models.product_model import Product, ProductType
-# from yummy_pizza_api_service.db.models.product_option_model import ProductOption, ProductOptionKind
+from yummy_pizza_api_service.db.models.product_model import Product, ProductType
+from yummy_pizza_api_service.db.models.product_option_model import ProductOption, ProductOptionKind
 import json
+import ormar
 from datetime import datetime
 
 
@@ -200,7 +201,7 @@ class OrderDAO:
     # item related
     """
 
-    async def add_item(self, base_order: dict, input_order_option: OrderProduct) -> Order:
+    async def add_item(self, base_order: dict, input_order_option: dict) -> Order:
         """
         Add an item to an existing order.
 
@@ -221,14 +222,28 @@ class OrderDAO:
         if existed is None:
             raise "request order is not single one"  # type: ignore
 
-        await OrderProduct.objects.create(**{
-            **input_order_option.dict(),
-            'for_order': existed
-        })
+        existed_prod = await Product.objects.get(id=input_order_option['product']['id'])
+        order_prod_set = await OrderProduct.objects.create(
+            base_referance=existed_prod,
+            for_order=existed,
+        )
+        for input_extra_opt in input_order_option['extra_options']:
+            existed_prod_opt = await ProductOption.objects.get(id=input_extra_opt['option_referance']['id'])
+            new_save = OrderProductOption(
+                for_order=order_prod_set.pk,
+                option=str(input_extra_opt['option']),
+                count=input_extra_opt['count'],
+                option_referance=existed_prod_opt.pk
+            )
+            await new_save.save_related()
 
-        return await existed.load_all(follow=True)
+        return await existed.load_all(follow=True, exclude=[
+            "items__base_referance__options",
+            "items__extra_options__for_order",
+            "items__extra_options__option_referance__option_for_product"
+        ])
 
-    async def remove_item(self, base_order: Order, input_order_option: OrderProduct) -> Order:
+    async def remove_item(self, base_order: dict) -> Order:
         """
         Remove an item from an existing order.
 
@@ -240,23 +255,31 @@ class OrderDAO:
         :rtype: Order
         :raises str: If the request order is not a single one.
         """
-
+        # print(base_order)
         existed = None
-        if base_order.id != None:
-            existed = await Order.objects.get_or_none(id=base_order.id)
-        elif base_order.order_number != None:
-            existed = await Order.objects.get_or_none(order_number=base_order.order_number)
+        if base_order['id'] != None:
+            existed = await Order.objects.get_or_none(id=base_order['id'])
+
+        elif base_order['order_number'] != None:
+            existed = await Order.objects.get_or_none(order_number=base_order['order_number'])
 
         if existed is None:
             raise "request order is not single one"  # type: ignore
 
-        await existed.load_all(follow=True)
-        for option_prod in existed.items:
-            if option_prod.id == input_order_option.id:
-                await OrderProduct.objects.filter(id=input_order_option.id).delete()
+
+        # print(base_order['items'])
+        ids = [s['id'] for s in base_order['items']]
+        existed_items = await OrderProduct.objects.filter(ormar.and_(for_order__id=existed.id, id__in=ids)).all()
+        for option_prod in existed_items:
+            await option_prod.extra_options.clear(keep_reversed=False)
+            await option_prod.delete()
+
         # existed.save_related()
-        await existed.load_all(follow=True)
-        return existed
+        return await existed.load_all(follow=True, exclude=[
+            "items__base_referance__options",
+            "items__extra_options__for_order",
+            "items__extra_options__option_referance__option_for_product"
+        ])
 
     async def update_item(self, order: Order, tar_item: OrderProduct):
         return None

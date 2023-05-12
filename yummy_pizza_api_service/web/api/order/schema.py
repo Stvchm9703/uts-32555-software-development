@@ -1,4 +1,4 @@
-from typing import List, Optional, Union
+from typing import List, Optional, Union, Any
 from datetime import datetime
 from uuid import UUID
 
@@ -7,7 +7,7 @@ from pydantic import BaseModel
 # from yummy_pizza_api_service.db.models.transaction_model import Transaction
 # from yummy_pizza_api_service.db.models.order_product_model import OrderProduct
 
-from yummy_pizza_api_service.web.api.product.schema import ProductOptionModelDTO, ProductModelDTO, ProductModelInputDTO
+from yummy_pizza_api_service.web.api.product.schema import ProductOptionModelDTO, ProductModelDTO, ProductModelInputDTO, ProductOptionInputModelDTO
 
 
 class OPTransactionDTO(BaseModel):
@@ -23,19 +23,19 @@ class OrderProductOptionDTO(BaseModel):
     option: Optional[str]
     count: Optional[int]
     charge: Optional[float]
-    option_referance: Optional[ProductOptionModelDTO]
+    option_referance: Optional[ProductOptionInputModelDTO]
 
 
 class OrderProductDTO(BaseModel):
     id: Optional[int]
     quality: Optional[int]
-    product: ProductModelInputDTO
+    base_referance: Optional[ProductModelInputDTO]
     extra_option: Optional[List[OrderProductOptionDTO]]
     remark: Optional[str]
 
 
 class OrderRefProductDTO(BaseModel):
-    id: Optional[str]
+    id: Optional[int]
     order_number: Optional[int]
     quality: Optional[int]
     product: Optional[ProductModelInputDTO]
@@ -45,8 +45,6 @@ class OrderRefProductDTO(BaseModel):
 
 class OrderDTO(BaseModel):
     id: int
-    # created_date: Optional[datetime]
-    # updated_date: Optional[datetime]
     contact_type: str
     status: str
     deliver_type: str

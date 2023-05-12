@@ -7,7 +7,9 @@ import { lazy } from "solid-js";
 
 const tabPageSetting = {
   order_list: lazy(() => import("./tab-order-list")),
-  create_order: lazy(() => import('./tab-create-order')),
+  // create_order: lazy(() => import('./tab-create-order')),
+  appointment_list: lazy(()=> import('./tab-table-appointment')),
+  
 }
 
 function App() {

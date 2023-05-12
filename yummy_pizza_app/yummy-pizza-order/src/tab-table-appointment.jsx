@@ -4,6 +4,8 @@ import InputField from "./input-set";
 import { For, Show, Suspense, lazy, createSignal, onMount, createEffect } from "solid-js";
 // import { OrderDialog } from "./order-dialog";
 
+const AppointmentDialog = lazy(() => import('./dialog-appointment'));
+
 const AppointmentSearchTableContainer = ({ children }) => (
   <div class="mt-2 relative overflow-x-auto">
     <table class="rounded-md border-solid border-[#e2e8f0] border py-2.5 px-5 flex flex-col gap-0 items-start justify-start min-h-75vh relative" >
@@ -72,6 +74,8 @@ const AppointmentSearchTableItem = ({ tableData, onTableRowClick }) => (
 )
 
 export default ({ createOrderIsOpen, setCreateOrderIsOpen }) => {
+  const [order_list, setOrderList] = createSignal();
+  // const [] = 
 
 
   const [tabOrderIsOpen, setTabOrderIsOpen] = createSignal(false);
@@ -89,20 +93,20 @@ export default ({ createOrderIsOpen, setCreateOrderIsOpen }) => {
   }
 
 
+  const onSearchEnter = (value) => { }
+
   return (
     <>
       <InputField onSearchEnter={onSearchEnter} />
       <AppointmentSearchTableContainer>
         <Suspense fallback={(<p> loading </p>)}>
           <For each={order_list()}>
-            {(order_set) => (
-              <AppointmentSearchTableItem tableData={order_set} onTableRowClick={onTableRowClick} />
-            )}
+            {(order_set) => (<AppointmentSearchTableItem tableData={order_set} onTableRowClick={onTableRowClick} />)}
           </For>
         </Suspense>
       </AppointmentSearchTableContainer>
       <Show when={tabOrderIsOpen()}>
-        {/* <OrderDialog setCreateOrderIsOpen={onSetTabOrderIsOpen} /> */}
+        <AppointmentDialog setCreateOrderIsOpen={onSetTabOrderIsOpen} />
       </Show>
 
     </>

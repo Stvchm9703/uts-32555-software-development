@@ -178,7 +178,7 @@ async def get_recept(
              response_model=OrderDTO,
              responses={**MESSAGE_SETTING}
              )
-async def add_item(
+async def order_add_item(
     updated_order: OrderRefProductDTO,
     order_dao: OrderDAO = Depends()
 ):
@@ -193,25 +193,18 @@ async def add_item(
     :rtype: Order
     :raises HTTPException: If the precondition fails while adding the item.
     """
-    try:
-        existed = await order_dao.add_item(
-            base_order=updated_order.dict(),  # type: ignore
-            input_order_option=OrderProduct(**updated_order.dict()))  # type: ignore
-        return existed
-
-    except Exception as e:
-        return JSONResponse(
-            status_code=status.HTTP_412_PRECONDITION_FAILED,
-            content=Message(status="PRECONDITION_FAILED", reason=str(e)).dict()
-        )
+    return await order_dao.add_item(
+        base_order=updated_order.dict(),  # type: ignore
+        input_order_option=updated_order.dict()  # type: ignore
+    )
 
 
 @router.post("/item/remove",
              response_model=OrderDTO,
              responses={**MESSAGE_SETTING}
              )
-async def remove_item(
-    updated_order: OrderRefProductDTO,
+async def order_remove_item(
+    updated_order: OrderInputDTO,
     order_dao: OrderDAO = Depends()
 ):
     """
@@ -225,15 +218,6 @@ async def remove_item(
     :rtype: Order
     :raises HTTPException: If the precondition fails.
     """
-    try:
-        existed = await order_dao.remove_item(
-            base_order=OrderInputDTO(id=updated_order.id,
-                                     order_number=updated_order.order_number),  # type: ignore
-            input_order_option=OrderProductDTO(**updated_order))  # type: ignore
-        return existed
-
-    except Exception as e:
-        return JSONResponse(
-            status_code=status.HTTP_412_PRECONDITION_FAILED,
-            content=Message(status="PRECONDITION_FAILED", reason=str(e)).dict()
-        )
+    return await order_dao.remove_item(
+        base_order=updated_order.dict(),  # type: ignore
+    )

@@ -2,6 +2,7 @@ import json
 import pytest
 import httpx
 import unittest
+import ormar
 
 from typing import List
 from fastapi import FastAPI
@@ -14,6 +15,7 @@ from yummy_pizza_api_service.db.models.product_option_model import ProductOption
 from yummy_pizza_api_service.db.dao.product_dao import ProductDAO
 from yummy_pizza_api_service.db.dao.order_dao import OrderDAO
 from yummy_pizza_api_service.db.models.order_model import OrderType, OrderStatus, OrderDeliveryType
+from yummy_pizza_api_service.db.models.order_product_model import OrderProduct
 
 
 async def prebuild_products(fastapi_app, client) -> List[Product]:
@@ -133,7 +135,7 @@ async def test_add_item(
 ) -> None:
 
     """Tests product instance creation."""
-    url = fastapi_app.url_path_for("add_item")
+    url = fastapi_app.url_path_for("order_add_item")
 
     test_object = {
         'contact_type': 'phone_in',
@@ -145,7 +147,6 @@ async def test_add_item(
     }
     system_resp = await client.post(fastapi_app.url_path_for("create_order"), json=test_object)
     resp_dt = system_resp.json()
-    # print(system_resp)
     product_list = await prebuild_products(fastapi_app, client)
     response = await client.post(url, json={
         'id': resp_dt['id'],
@@ -154,16 +155,64 @@ async def test_add_item(
         },
         'extra_options': [
             {
-                'id': product_list[0].options[0].id,
+                'option_referance': {'id': product_list[0].options[0].id},
                 'option': 'tomato sauce'
             }
-        ],
-        'quality': 1
+        ]
     })
+    assert response.status_code == status.HTTP_200_OK
+    dao = OrderDAO()
+    instances = await dao.filter(id=resp_dt['id'])
+    inst_obj = await instances[0].load_all(follow=True)
+
+    assert inst_obj.items[0].base_referance.id == product_list[0].id
+    assert inst_obj.items[0].extra_options[0].id == product_list[0].options[0].id
+
+
+@pytest.mark.anyio
+async def test_remove_item(
+    fastapi_app: FastAPI,
+    client: AsyncClient,
+) -> None:
+
+    """Tests product remove creation."""
+    url = fastapi_app.url_path_for("order_remove_item")
+
+    test_object = {
+        'contact_type': 'phone_in',
+        'deliver_type': 'dine_in',
+        'customer_name': 'Albert.K',
+        'customer_contact': 435623453,
+        'customer_address': 'NSW 2070, St John st',
+        'staff': 'steve',
+    }
+    system_resp = await client.post(fastapi_app.url_path_for("create_order"), json=test_object)
+    resp_dt = system_resp.json()
+    product_list = await prebuild_products(fastapi_app, client)
+    system_resp_1 = await client.post(fastapi_app.url_path_for("order_add_item"), json={
+        'id': resp_dt['id'],
+        'product': {
+            'id': product_list[0].id
+        },
+        'extra_options': [
+            {
+                'option_referance': {'id': product_list[0].options[0].id},
+                'option': 'tomato sauce'
+            }
+        ]
+    })
+
+    targ = system_resp_1.json()
+    test_obj_1 = {
+        'id': resp_dt['id'],  # order-id
+        'items': [{'id': dd['id']} for dd in targ['items']]
+    }
+    response = await client.post(url, json=test_obj_1)
+
     assert response.status_code == status.HTTP_200_OK
 
     dao = OrderDAO()
     instances = await dao.filter(id=resp_dt['id'])
     inst_obj = instances[0]
 
-    # assert inst_obj.items =
+    assert len(inst_obj.items) == 0

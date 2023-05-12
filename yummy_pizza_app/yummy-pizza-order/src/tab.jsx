@@ -1,5 +1,11 @@
 import { createEffect, createSignal, onMount } from "solid-js";
 
+export const TabNameList = [
+  { name: 'order_list', display: 'Order List' },
+  { name: 'appointment_list', display: 'Appointment List' },
+  { name: 'product_list', display: 'Product List' },
+  { name: 'setting', display: 'Setting' }
+]
 const TabButton = ({ children, onclick, currentTab, tabName }) => {
   //  createEffect(()=>console.log(isActive) , isActive)
   const isActive = () => currentTab() === tabName
@@ -18,7 +24,7 @@ const TabButton = ({ children, onclick, currentTab, tabName }) => {
     </button>
   )
 }
-const TabList = ({ children, onTabChange , onCreateClick }) => {
+const TabList = ({ children, onTabChange, onCreateClick }) => {
   const [currentTab, setCurrentTab] = createSignal("order_list")
   const onTabClick = (state) => {
     setCurrentTab(state)
@@ -33,10 +39,9 @@ const TabList = ({ children, onTabChange , onCreateClick }) => {
       class="px-0 py-2 flex flex-row gap-2 items-start justify-start self-stretch shrink-0 h-auto relative overflow-hidden align-baseline items-center"
     >
       <div class="bg-slate-100 rounded-md p-[5px] flex flex-row gap-0 items-start justify-start flex-1 relative">
-        <TabButton onclick={() => onTabClick('order_list')} tabName={'order_list'} currentTab={currentTab} >Order List</TabButton>
-        <TabButton onclick={() => onTabClick('table_appoint_list')} tabName={'table_appoint_list'} currentTab={currentTab} >Table Appointment List</TabButton>
-        <TabButton onclick={() => onTabClick('product_list')} tabName={'product_list'} currentTab={currentTab} >Product List</TabButton>
-        <TabButton onclick={() => onTabClick('setting')} tabName={'setting'} currentTab={currentTab} >Setting</TabButton>
+        <For each={TabNameList}>
+          {(tab_set) => (<TabButton onclick={() => onTabClick(tab_set.name)} tabName={tab_set.name} currentTab={currentTab} >{tab_set.display}</TabButton>)}
+        </For>
       </div>
       <button
         class="bg-slate-900 rounded py-2 px-4 flex flex-row gap-0 items-center justify-end shrink-0 h-auto relative"
@@ -55,3 +60,4 @@ const TabList = ({ children, onTabChange , onCreateClick }) => {
 }
 
 export default TabList
+

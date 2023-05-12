@@ -2,10 +2,10 @@ import InputField from "./input-set";
 // import Dialog from "./dialog";
 import { For, Show, Suspense, lazy, createSignal, onMount, createEffect } from "solid-js";
 // import { OrderDialog } from "./order-dialog";
-const OrderDialog = lazy(() => import('./order-dialog'))
+const OrderDialog = lazy(() => import('./dialog-order'))
 const OrderSearchTableContainer = ({ children }) => (
   <div class="mt-2 relative overflow-x-auto">
-    <table class="rounded-md border-solid border-[#e2e8f0] border py-2.5 px-5 flex flex-col gap-0 items-start justify-start min-h-75vh relative" >
+    <table class="rounded-md bg-light-100 border-solid border-[#e2e8f0] border py-2.5 px-5 flex flex-col gap-0 items-start justify-start min-h-75vh relative" >
       <thead class="block w-full text-xs text-gray-700">
         <tr class="border-solid border-[#cbd5e1] border-b-1 py-1.5 px-0  flex flex-row gap-2 items-center justify-start self-stretch shrink-0 h-10 relative">
           <th scope="col" className="p-1 pl-0 flex flex-row gap-2.5 items-center justify-start shrink-0 w-[70px] relative">

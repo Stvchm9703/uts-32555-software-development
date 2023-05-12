@@ -15,20 +15,18 @@ class OrderProductOption(BaseModel):
     option: str = ormar.String(max_length=500, nullable=True)
     count: int = ormar.Integer(nullable=True)
     charge: float = ormar.Float(nullable=True)
+
     option_referance: Optional[ProductOption] = ormar.ForeignKey(
         ProductOption,
         related_name="options",
         name="fk_options_product",
         skip_reverse=True,
-        nullable=False
     )
-    order_option_for: Optional[OrderProduct] = ormar.ForeignKey(
-        ProductOption,
+    for_order: Optional[OrderProduct] = ormar.ForeignKey(
+        OrderProduct,
         related_name="extra_options",
         name="fk_order_product",
-        nullable=False
-        # skip_reverse=True,
     )
-
+    
     class Meta(BaseMeta):
         tablename = "ordprodopt"

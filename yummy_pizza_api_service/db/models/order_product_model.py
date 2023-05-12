@@ -15,7 +15,7 @@ class OrderProduct(BaseModel):
         skip_reverse=True,
         nullable=False
     )
-    remark: str
+    remark: str = ormar.String(max_length=500, nullable=True)
     for_order: Optional[Order] = ormar.ForeignKey(
         Order,
         name="fk_order_refer",

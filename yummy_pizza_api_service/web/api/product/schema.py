@@ -61,3 +61,18 @@ class ProductModelSearchInputDTO(BaseModel):
     price_min_range: Optional[float]
     limit: Optional[int]
     offset: Optional[int]
+
+
+class ProductOptionInputModelDTO(BaseModel):
+    id: Optional[int]
+    name: Optional[str]
+    description: Optional[str]
+    extra_charge: Optional[float]
+    option_kind: Optional[str]
+    max_count: Optional[int]
+    min_count: Optional[int]
+    kal: Optional[float]
+    # option_sets: Optional[List[str]]
+
+    class Config:
+        orm_mode = True

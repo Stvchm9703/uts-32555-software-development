@@ -124,11 +124,16 @@ export default ({ setCreateOrderIsOpen, existOrder }) => {
   const onItemAddClick = () => { };
   const onItemRemoveClick = () => { };
   const { currentOrder } = createOrder(existOrder);
+  const onConfirmClick = () => { };
   return (
     <Portal>
-      <Dialog title="Create Order" onCloseClick={() => setCreateOrderIsOpen(false)}>
+      <Dialog title="Create Order"
+        onCloseClick={() => setCreateOrderIsOpen(false)}
+        onCancelClick={() => setCreateOrderIsOpen(false)}
+        onConfirmClick={onConfirmClick}
+      >
         <div className="max-h-full flex py-1.5 w-full">
-          <div className=" flex flex-col  w-65% overflow-y-scroll bg-white dark:bg-gray-900 text-gray-900 dark:text-white ">
+          <div className=" flex flex-col  w-65% overflow-y-scroll scrollbar-hide bg-white dark:bg-gray-900 text-gray-900 dark:text-white ">
             <Suspense fallback={spinner}>
               <For each={options()}>
                 {(option_item, i) => (<ProductListItem
@@ -139,14 +144,18 @@ export default ({ setCreateOrderIsOpen, existOrder }) => {
             </Suspense>
           </div>
 
-          <div className="border-l-1 border-coolGray w-35% flex flex overflow-y-scroll">
-            <Suspense fallback={spinner}>
-              <For each={currentOrder.items}>
-                {(order_item, i) => (
-                  <PendingOrderProductItem item={order_item} />
-                )}
-              </For>
-            </Suspense>
+          <div className="border-l-1 border-coolGray w-35% flex flex-col">
+            <div className="flex flex-col grow-1 overflow-y-auto scrollbar-hide">
+              <Suspense fallback={spinner}>
+                <For each={currentOrder.items}>
+                  {(order_item, i) => (<PendingOrderProductItem item={order_item} />)}
+                </For>
+              </Suspense>
+            </div>
+            <div className="bg-light-100 border-t-1 border-b-1 border-solid items-center border-[#cbd5e1] pt-0 pr-2 pb-0 pl-2 flex flex-row gap-0 items-start justify-start w-[392px] h-[59px] relative overflow-hidden" >
+              <span className="text-dark-600 self-center  text-left p-l-2 h-6 flex items-center justify-start" > Total: </span>
+              <span className="text-dark-600 text-right line-height-relaxed ml-auto mr-2 min-w-[150px] h-6 flex items-center justify-end" > $25 </span>
+            </div>
           </div>
         </div>
       </Dialog>
