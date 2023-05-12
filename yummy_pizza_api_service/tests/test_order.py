@@ -216,3 +216,144 @@ async def test_remove_item(
     inst_obj = instances[0]
 
     assert len(inst_obj.items) == 0
+
+
+@pytest.mark.anyio
+async def test_comfirm(
+    fastapi_app: FastAPI,
+    client: AsyncClient,
+) -> None:
+    """Tests product instance creation."""
+    url = fastapi_app.url_path_for("confirm_order")
+    test_object = {
+        'contact_type': "walk_in",
+        'deliver_type': 'dine_in',
+        'customer_name': 'Albert.K',
+        'customer_contact': 435623453,
+        'customer_address': 'NSW 2070, St John st',
+        'staff': 'steve',
+    }
+
+    system_resp = await client.post(fastapi_app.url_path_for("create_order"), json=test_object)
+    dao = OrderDAO()
+    instances = await dao.filter(keyword=test_object['customer_name'])
+    inst_obj = instances[0]
+    response = await client.post(url, json=system_resp.json())
+    assert response.status_code == status.HTTP_200_OK
+    result = await dao.filter(id=inst_obj.id)
+    assert result[0].status == OrderStatus.unpaid.value
+
+
+@pytest.mark.anyio
+async def test_payment(
+    fastapi_app: FastAPI,
+    client: AsyncClient,
+) -> None:
+    """Tests product instance creation."""
+    url = fastapi_app.url_path_for("payment_order")
+    test_object = {
+        'contact_type': "walk_in",
+        'deliver_type': 'dine_in',
+        'customer_name': 'Albert.K',
+        'customer_contact': 435623453,
+        'customer_address': 'NSW 2070, St John st',
+        'staff': 'steve',
+    }
+
+    system_resp = await client.post(fastapi_app.url_path_for("create_order"), json=test_object)
+    await client.post(fastapi_app.url_path_for('confirm_order', json=test_object))
+    dao = OrderDAO()
+    instances = await dao.filter(keyword=test_object['customer_name'])
+    inst_obj = instances[0]
+    response = await client.post(url, json=system_resp.json())
+    assert response.status_code == status.HTTP_200_OK
+    result = await dao.filter(id=inst_obj.id)
+    assert result[0].status == OrderStatus.paid.value
+
+
+@pytest.mark.anyio
+async def test_payment_complete(
+    fastapi_app: FastAPI,
+    client: AsyncClient,
+) -> None:
+    """Tests product instance creation."""
+    url = fastapi_app.url_path_for("payment_complete")
+    test_object = {
+        'contact_type': "walk_in",
+        'deliver_type': 'dine_in',
+        'customer_name': 'Albert.K',
+        'customer_contact': 435623453,
+        'customer_address': 'NSW 2070, St John st',
+        'staff': 'steve',
+    }
+
+    system_resp = await client.post(fastapi_app.url_path_for("create_order"), json=test_object)
+    await client.post(fastapi_app.url_path_for('confirm_order', json=test_object))
+    await client.post(fastapi_app.url_path_for('payment_order', json=test_object))
+    dao = OrderDAO()
+    instances = await dao.filter(keyword=test_object['customer_name'])
+    inst_obj = instances[0]
+    response = await client.post(url, json=system_resp.json())
+    assert response.status_code == status.HTTP_200_OK
+    result = await dao.filter(id=inst_obj.id)
+    assert result[0].status == OrderStatus.producing.value
+
+
+@pytest.mark.anyio
+async def test_deliver(
+    fastapi_app: FastAPI,
+    client: AsyncClient,
+) -> None:
+    """Tests product instance creation."""
+    url = fastapi_app.url_path_for("deliver_order")
+    test_object = {
+        'contact_type': "walk_in",
+        'deliver_type': 'dine_in',
+        'customer_name': 'Albert.K',
+        'customer_contact': 435623453,
+        'customer_address': 'NSW 2070, St John st',
+        'staff': 'steve',
+    }
+
+    system_resp = await client.post(fastapi_app.url_path_for("create_order"), json=test_object)
+    await client.post(fastapi_app.url_path_for('confirm_order', json=test_object))
+    await client.post(fastapi_app.url_path_for('payment_order', json=test_object))
+    await client.post(fastapi_app.url_path_for('payment_complete', json=test_object))
+    dao = OrderDAO()
+    instances = await dao.filter(keyword=test_object['customer_name'])
+    inst_obj = instances[0]
+    response = await client.post(url, json=system_resp.json())
+    assert response.status_code == status.HTTP_200_OK
+    result = await dao.filter(id=inst_obj.id)
+    assert result[0].status == OrderStatus.delivering.value
+
+
+@pytest.mark.anyio
+async def test_complete(
+    fastapi_app: FastAPI,
+    client: AsyncClient,
+) -> None:
+    """Tests product instance creation."""
+    url = fastapi_app.url_path_for("complete_order")
+    test_object = {
+        'contact_type': "walk_in",
+        'deliver_type': 'dine_in',
+        'customer_name': 'Albert.K',
+        'customer_contact': 435623453,
+        'customer_address': 'NSW 2070, St John st',
+        'staff': 'steve',
+    }
+
+    system_resp = await client.post(fastapi_app.url_path_for("create_order"), json=test_object)
+    await client.post(fastapi_app.url_path_for('confirm_order', json=test_object))
+    await client.post(fastapi_app.url_path_for('payment_order', json=test_object))
+    await client.post(fastapi_app.url_path_for('payment_complete', json=test_object))
+    await client.post(fastapi_app.url_path_for('deliver_order', json=test_object))
+
+    dao = OrderDAO()
+    instances = await dao.filter(keyword=test_object['customer_name'])
+    inst_obj = instances[0]
+    response = await client.post(url, json=system_resp.json())
+    assert response.status_code == status.HTTP_200_OK
+    result = await dao.filter(id=inst_obj.id)
+    assert result[0].status == OrderStatus.completed.value

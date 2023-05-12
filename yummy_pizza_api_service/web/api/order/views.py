@@ -126,6 +126,110 @@ async def cancel_order(
     return result
 
 
+@router.post("/confirm_order",
+             response_model=OrderDTO,
+             responses={**MESSAGE_SETTING}
+             )
+async def confirm_order(
+    target_order: OrderInputDTO,
+    order_dao: OrderDAO = Depends()
+):
+    """
+    """
+    if target_order.id == None:
+        return JSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND,
+            content=Message(status="error", reason=str("id is empty"))
+        )
+
+    result = await order_dao.confirm_order(target_order.id)
+    if result == None:
+        return JSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND,
+            content=Message(status="error", reason=str("order is not found")).dict()
+        )
+
+    return result
+
+
+@router.post("/payment_order",
+             response_model=OrderDTO,
+             responses={**MESSAGE_SETTING}
+             )
+async def payment_order(
+    target_order: OrderInputDTO,
+    order_dao: OrderDAO = Depends()
+):
+    """
+    """
+    if target_order.id == None:
+        return JSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND,
+            content=Message(status="error", reason=str("id is empty"))
+        )
+
+    result = await order_dao.request_payment_order(target_order.id)
+    if result == None:
+        return JSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND,
+            content=Message(status="error", reason=str("order is not found")).dict()
+        )
+
+    return result
+
+
+@router.post("/payment_complete",
+             response_model=OrderDTO,
+             responses={**MESSAGE_SETTING}
+             )
+async def payment_complete(
+    target_order: OrderInputDTO,
+    order_dao: OrderDAO = Depends()
+):
+    """
+    """
+    if target_order.id == None:
+        return JSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND,
+            content=Message(status="error", reason=str("id is empty"))
+        )
+
+    result = await order_dao.producing_order(target_order.id)
+    if result == None:
+        return JSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND,
+            content=Message(status="error", reason=str("order is not found")).dict()
+        )
+
+    return result
+
+
+@router.post("/start_deliver",
+             response_model=OrderDTO,
+             responses={**MESSAGE_SETTING}
+             )
+async def deliver_order(
+    target_order: OrderInputDTO,
+    order_dao: OrderDAO = Depends()
+):
+    """
+    """
+    if target_order.id == None:
+        return JSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND,
+            content=Message(status="error", reason=str("id is empty"))
+        )
+
+    result = await order_dao.sending_order(target_order.id)
+    if result == None:
+        return JSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND,
+            content=Message(status="error", reason=str("order is not found")).dict()
+        )
+
+    return result
+
+
 @router.post("/complete_order",
              response_model=OrderDTO,
              responses={**MESSAGE_SETTING}

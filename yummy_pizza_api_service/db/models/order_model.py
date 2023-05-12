@@ -104,7 +104,9 @@ class Order(BaseModel):
             transaction_reference="",
             remark=""
         )
-        return (await Order.objects.update(**self, transaction=new_trans)) == 1
+        self.transaction = new_trans
+        d = (await self.save_related(follow=True, save_all=True))
+        return d != None
 
     def print_as_receipt(self) -> str:
         """
@@ -118,4 +120,3 @@ class Order(BaseModel):
         """
 
         return ""
-

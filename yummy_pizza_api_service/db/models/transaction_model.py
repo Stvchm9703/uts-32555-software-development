@@ -26,12 +26,12 @@ class PaymentType(Enum):
 class Transaction(BaseModel):
     __table_args__ = {'extend_existing': True}
     
-    transaction_date: datetime = ormar.DateTime()
+    transaction_date: datetime = ormar.DateTime(nullable=True)
     payment_type: str = ormar.String(max_length=200, choices=list(PaymentType))
     payment_status: str = ormar.String(max_length=200, choices=list(TransactionStatus))
-    value: float = ormar.Float()
-    transaction_reference: str = ormar.String(max_length=200)
-    remark: str = ormar.String(max_length=500)
+    value: float = ormar.Float(nullable=True)
+    transaction_reference: str = ormar.String(max_length=200, nullable=True)
+    remark: str = ormar.String(max_length=500, nullable=True)
 
     class Meta(BaseMeta):
         tablename = "transaction"

@@ -176,23 +176,74 @@ class OrderDAO:
         """
         tar = await Order.objects.get_or_none(id=order_id)
         if tar:
-            await tar.update_status(OrderStatus.void)
+            if (tar.status != OrderStatus.void.value
+                and tar.status != OrderStatus.completed.value
+                    and tar.status != OrderStatus.delivering.value):
+                await tar.update_status(OrderStatus.void)
+
         return tar
 
-    async def complete_order(self, order_id: int) -> Optional[Order]:
-        """
-        Completes an order by updating its status, requesting payment, and loading all related data.
+    async def confirm_order(self, order_id: int) -> Optional[Order]:
+        tar = await Order.objects.get_or_none(id=order_id)
+        if tar:
+            if tar.status == OrderStatus.created.value:
+                await tar.update_status(OrderStatus.unpaid)
+                # start payment
+                await tar.request_payment()
+            await tar.load_all(follow=True)
+            # await tar.update()
+        return tar
 
-        :param order_id: The ID of the order to complete.
-        :type order_id: int
-        :return: The completed order, or None if it was not found.
-        :rtype: Optional[Order]
+    async def request_payment_order(self, order_id: int) -> Optional[Order]:
+        """
+
         """
         tar = await Order.objects.get_or_none(id=order_id)
         if tar:
-            await tar.update_status(OrderStatus.completed)
+            if tar.status == OrderStatus.unpaid.value:
+                await tar.update_status(OrderStatus.paid)
+            await tar.load_all(follow=True)
+            # await tar.update()
+        return tar
+
+    async def producing_order(self, order_id: int) -> Optional[Order]:
+        """
+
+        """
+        tar = await Order.objects.get_or_none(id=order_id)
+        if tar:
+            if tar.status == OrderStatus.paid.value:
+                await tar.update_status(OrderStatus.producing)
+                # 
+            await tar.load_all(follow=True)
+            # await tar.update()
+        return tar
+
+
+    async def sending_order(self, order_id: int) -> Optional[Order]:
+        """
+
+        """
+        tar = await Order.objects.get_or_none(id=order_id)
+        if tar:
+            if tar.status == OrderStatus.producing.value:
+                await tar.update_status(OrderStatus.delivering)
+                # 
+            await tar.load_all(follow=True)
+            # await tar.update()
+        return tar
+    
+
+    async def complete_order(self, order_id: int) -> Optional[Order]:
+        """
+
+        """
+        tar = await Order.objects.get_or_none(id=order_id)
+        if tar:
+            if tar.status == OrderStatus.delivering.value:
+                await tar.update_status(OrderStatus.completed)
             # start payment
-            await tar.request_payment()
+            # await tar.request_payment()
             await tar.load_all(follow=True)
             # await tar.update()
         return tar
@@ -265,7 +316,6 @@ class OrderDAO:
 
         if existed is None:
             raise "request order is not single one"  # type: ignore
-
 
         # print(base_order['items'])
         ids = [s['id'] for s in base_order['items']]

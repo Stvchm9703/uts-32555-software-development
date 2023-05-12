@@ -5,7 +5,7 @@ run:
 	docker-compose -f deploy/docker-compose.yml -f deploy/docker-compose.dev.yml --project-directory . up
 	
 dev-test:
-	docker-compose -f deploy/docker-compose.yml -f deploy/docker-compose.dev.yml --project-directory . run --rm api pytest -vv -rx 
+	docker-compose -f deploy/docker-compose.yml -f deploy/docker-compose.dev.yml --project-directory . run --rm api pytest -vv yummy_pizza_api_service/tests/test_order.py  -rx 
 
 test: 
 	docker-compose -f deploy/docker-compose.yml --project-directory . run --rm api pytest -vv .
