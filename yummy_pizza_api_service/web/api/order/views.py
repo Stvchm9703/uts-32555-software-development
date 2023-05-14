@@ -21,7 +21,7 @@ from yummy_pizza_api_service.web.api.order.schema import (
 router = APIRouter()
 
 
-@router.get("/list_order",
+@router.get("/list",
             response_model=List[OrderDTO],
             responses={**MESSAGE_SETTING}  # type: ignore
             )
@@ -48,7 +48,7 @@ async def get_latest_orders(
         return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content=Message(status="error", reason=str(e)).dict())
 
 
-@router.post("/create_order",
+@router.post("/create",
              response_model=OrderDTO,
              responses={**MESSAGE_SETTING}  # type: ignore
              )
@@ -66,10 +66,7 @@ async def create_order(
     :return: The newly created order.
     :rtype: Order
     """
-    try:
-        return await order_dao.create(order=new_order.dict())
-    except Exception as e:
-        return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content=Message(status="error", reason=str(e)).dict())
+    return await order_dao.create(order=new_order.dict())
 
 
 @router.post("/search",
@@ -87,13 +84,13 @@ async def filter_order_models(
     :param order_dao: An instance of OrderDAO to perform the filtering.
     :return: A list of Order models that match the filter query.
     """
-    try:
-        return await order_dao.filter(**order_filter_query.dict())
-    except Exception as e:
-        return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content=Message(status="error", reason=str(e)).dict())
+    # try:
+    return await order_dao.filter(**order_filter_query.dict())
+    # except Exception as e:
+    #     return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content=Message(status="error", reason=str(e)).dict())
 
 
-@router.post("/cancel_order",
+@router.post("/cancel",
              response_model=OrderDTO,
              responses={**MESSAGE_SETTING}  # type: ignore
              )
@@ -126,7 +123,7 @@ async def cancel_order(
     return result
 
 
-@router.post("/confirm_order",
+@router.post("/confirm",
              response_model=OrderDTO,
              responses={**MESSAGE_SETTING}
              )
@@ -135,6 +132,17 @@ async def confirm_order(
     order_dao: OrderDAO = Depends()
 ):
     """
+    Confirms an order given an OrderInputDTO and an OrderDAO.
+
+    :param target_order: an OrderInputDTO representing the order to be confirmed
+    :type target_order: OrderInputDTO
+    :param order_dao: an OrderDAO object to access the database
+    :type order_dao: OrderDAO
+
+    :return: an OrderDTO representing the confirmed order
+    :rtype: OrderDTO
+
+    :raises HTTPException 404: if the target_order.id does not exist or the order is not found
     """
     if target_order.id == None:
         return JSONResponse(
@@ -161,6 +169,14 @@ async def payment_order(
     order_dao: OrderDAO = Depends()
 ):
     """
+    Endpoint for processing payment orders.
+
+    :param target_order: An instance of OrderInputDTO class representing the payment order to be processed.
+    :type target_order: OrderInputDTO
+    :param order_dao: An instance of OrderDAO class for communicating with the database.
+    :type order_dao: OrderDAO
+    :return: An instance of OrderDTO class representing the result of the payment order processing.
+    :rtype: OrderDTO
     """
     if target_order.id == None:
         return JSONResponse(
@@ -187,6 +203,17 @@ async def payment_complete(
     order_dao: OrderDAO = Depends()
 ):
     """
+    Receives a POST request from the payment gateway confirming the completion of payment.
+    If the order with the given ID is not found, or the ID is empty, returns a JSONResponse
+    with the appropriate status and error message. Otherwise, returns the result of the
+    producing_order method from the OrderDAO.
+
+    :param target_order: An instance of OrderInputDTO representing the order that was paid for.
+    :type target_order: OrderInputDTO
+    :param order_dao: An instance of OrderDAO used to interact with the database.
+    :type order_dao: OrderDAO
+    :return: An instance of OrderDTO representing the order that was paid for.
+    :rtype: OrderDTO
     """
     if target_order.id == None:
         return JSONResponse(
@@ -213,6 +240,18 @@ async def deliver_order(
     order_dao: OrderDAO = Depends()
 ):
     """
+    Starts the delivery process of a given order.
+
+    :param target_order: The order to be delivered.
+    :type target_order: OrderInputDTO
+    :param order_dao: The data access object for orders.
+    :type order_dao: OrderDAO
+
+    :return: The updated order with new delivery status.
+    :rtype: OrderDTO
+
+    :raises:
+        - HTTPException: If the order id is empty or the order is not found.
     """
     if target_order.id == None:
         return JSONResponse(
@@ -230,7 +269,7 @@ async def deliver_order(
     return result
 
 
-@router.post("/complete_order",
+@router.post("/complete",
              response_model=OrderDTO,
              responses={**MESSAGE_SETTING}
              )
@@ -270,6 +309,17 @@ async def get_recept(
     target_order: OrderInputDTO,
     order_dao: OrderDAO = Depends()
 ):
+    """
+    Retrieves a recept for the given target order.
+
+    :param target_order: The order input DTO to retrieve the recept for.
+    :type target_order: OrderInputDTO
+    :param order_dao: The order data access object to use.
+    :type order_dao: OrderDAO
+    :return: A dictionary containing the export text for the recept.
+    :rtype: Dict
+    :raises: HTTPException(404) if the target order is not found.
+    """
     return {"export_text": ""}
 
 

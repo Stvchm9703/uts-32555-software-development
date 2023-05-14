@@ -6,6 +6,18 @@ import { For, Show, Suspense, lazy, createSignal, onMount, createEffect } from "
 
 const AppointmentDialog = lazy(() => import('./dialog-appointment'));
 
+const fetchExample = async () => {
+  return [
+    
+  ]
+}
+
+
+/**
+* Renders a container component for an appointment search table with the given children components.
+* @param {Object} props - The props object containing children components.
+* @returns {JSX.Element} - The rendered container component.
+*/
 const AppointmentSearchTableContainer = ({ children }) => (
   <div class="mt-2 relative overflow-x-auto">
     <table class="rounded-md border-solid border-[#e2e8f0] border py-2.5 px-5 flex flex-col gap-0 items-start justify-start min-h-75vh relative" >
@@ -42,7 +54,12 @@ const AppointmentSearchTableContainer = ({ children }) => (
 );
 
 
-
+/**
+ * Renders a table row with appointment information.
+ * @param {TableAppointment} tableData - An object containing appointment data to be displayed on the row.
+ * @param {function} onTableRowClick - A function to be called when the table row is clicked.
+ * @returns {JSX.Element} A table row element with appointment data.
+ */
 
 const AppointmentSearchTableItem = ({ tableData, onTableRowClick }) => (
   <tr
@@ -62,21 +79,22 @@ const AppointmentSearchTableItem = ({ tableData, onTableRowClick }) => (
     </td>
 
     <td className="p-1 flex flex-row gap-2.5 items-center justify-start shrink-0 w-[120px] relative">
-      <span className="text-dark-600 text-center relative flex items-center justify-center" > {tableData.deliver_type} </span>
+      <span className="text-dark-600 text-center relative flex items-center justify-center" > {tableData.count} </span>
     </td>
     <td className="p-1 flex flex-row gap-2.5 items-center justify-start shrink-0 w-[120px] relative">
-      <span className="text-dark-600 text-center relative flex items-center justify-center" > {tableData.deliver_type} </span>
+      <span className="text-dark-600 text-center relative flex items-center justify-center" > {tableData.start_time} ~ {tableData.end_time} </span>
     </td>
     <td className="p-1 flex flex-row gap-2.5 items-center justify-start shrink-0 w-[120px] relative">
-      <span className="text-dark-600 text-center relative flex items-center justify-center" > {tableData.deliver_type} </span>
+      <span className="text-dark-600 text-center relative flex items-center justify-center" > {!!tableData.transaction} </span>
     </td>
   </tr>
 )
 
+
+
 export default ({ createOrderIsOpen, setCreateOrderIsOpen }) => {
   const [order_list, setOrderList] = createSignal();
   // const [] = 
-
 
   const [tabOrderIsOpen, setTabOrderIsOpen] = createSignal(false);
   createEffect(() => {

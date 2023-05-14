@@ -6,11 +6,17 @@ import createOrder from "./composition/order/use-order";
 import { fetchProduct } from "./composition/order/product";
 import Dialog from "./dialog";
 
-export default () => {
-  const onFormSubmit = () => { }
+export default ({ setCreateOrderIsOpen }) => {
+  const onFormSubmit = ({ }) => { }
+  const onCancelClick = () => {
+    setCreateOrderIsOpen(false)
+  }
   return (
     <Portal>
-      <Dialog title="Create Appointment" onCloseClick={() => setCreateOrderIsOpen(false)}>
+      <Dialog title="Create Appointment"
+        onCloseClick={() => setCreateOrderIsOpen(false)}
+        onCancelClick={onCancelClick}
+      >
         <div className="max-h-full flex py-1.5 w-full">
           <div className=" flex flex-col  w-65% overflow-y-scroll bg-white dark:bg-gray-900 text-gray-900 dark:text-white scrollbar-hide">
 
@@ -61,8 +67,8 @@ export default () => {
             </div>
           </div>
 
-          <div className="border-l-1 border-coolGray w-35% flex flex overflow-y-scroll">
-            <div className="flex flex-col overflow-y-auto scrollbar-hide">
+          <div className="border-l-1 border-coolGray w-35% flex flex-col overflow-y-scroll">
+            <div className="flex flex-1 flex-col overflow-y-auto scrollbar-hide">
 
             </div>
             <div className="bg-light-100 border-t-1 border-b-1 border-solid items-center border-[#cbd5e1] pt-0 pr-2 pb-0 pl-2 flex flex-row gap-0 items-start justify-start w-[392px] h-[59px] relative overflow-hidden" >

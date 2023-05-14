@@ -6,16 +6,23 @@ from pydantic import BaseModel
 # from yummy_pizza_api_service.db.models.receipt_model import OrderType, OrderStatus, OrderDeliveryType, OrderReceipt
 # from yummy_pizza_api_service.db.models.transaction_model import Transaction
 # from yummy_pizza_api_service.db.models.order_product_model import OrderProduct
+from yummy_pizza_api_service.utils.datetime_str import convert_datetime_to_iso_8601_with_z_suffix
 
 from yummy_pizza_api_service.web.api.product.schema import ProductOptionModelDTO, ProductModelDTO, ProductModelInputDTO, ProductOptionInputModelDTO
-
+from datetime import datetime
 
 class OPTransactionDTO(BaseModel):
-    transaction_date: str
-    payment_type: str
-    payment_status: str
-    value: float
-    transaction_reference: str
+    transaction_date: Optional[datetime]
+    payment_type: Optional[str]
+    payment_status: Optional[str]
+    value: Optional[float]
+    transaction_reference: Optional[str]
+
+    class Config:
+        json_encoders = {
+            # custom output conversion for datetime
+            datetime: convert_datetime_to_iso_8601_with_z_suffix
+        }
 
 
 class OrderProductOptionDTO(BaseModel):
@@ -30,7 +37,7 @@ class OrderProductDTO(BaseModel):
     id: Optional[int]
     quality: Optional[int]
     base_referance: Optional[ProductModelInputDTO]
-    extra_option: Optional[List[OrderProductOptionDTO]]
+    extra_options: Optional[List[OrderProductOptionDTO]]
     remark: Optional[str]
 
 

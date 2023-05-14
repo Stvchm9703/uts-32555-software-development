@@ -1,8 +1,10 @@
 import InputField from "./input-set";
 // import Dialog from "./dialog";
-import { For, Show, Suspense, lazy, createSignal, onMount, createEffect } from "solid-js";
+import { For, Show, Suspense, lazy, createSignal, onMount, createEffect, createResource, createMemo } from "solid-js";
 // import { OrderDialog } from "./order-dialog";
+import { fetchOrderList } from "./composition/order/product";
 const OrderDialog = lazy(() => import('./dialog-order'))
+
 const OrderSearchTableContainer = ({ children }) => (
   <div class="mt-2 relative overflow-x-auto">
     <table class="rounded-md bg-light-100 border-solid border-[#e2e8f0] border py-2.5 px-5 flex flex-col gap-0 items-start justify-start min-h-75vh relative" >
@@ -53,18 +55,24 @@ const OrderSearchTableItem = ({ tableData /** @type Order*/, onTableRowClick }) 
       <span className="text-dark-600 text-left relative flex-1 h-5 flex items-center justify-start" > {tableData.customer_contact} </span>
     </td>
 
-    <td className=" rounded py-1.5 px-2 flex flex-row gap-2.5 items-center justify-start shrink-0 min-w-30 relative"
+    <td className="rounded py-1.5 px-2 flex flex-row gap-2.5 items-center justify-start shrink-0 min-w-30 relative"
       classList={{
         'bg-[#59c857]': tableData.status === 'completed',
         'bg-[#c99c58]': tableData.status === 'delivering',
         'bg-[#b82626]': tableData.status === 'producing',
+        'bg-coolGray': tableData.status === 'void',
+        'bg-blue-5': tableData.status === 'paid',
+        'bg-purple-5': tableData.status === 'unpaid',
+
       }}
     >
       <span className="text-light-100 text-center relative flex items-center justify-center" > {tableData.status} </span>
     </td>
 
     <td className="p-1 flex flex-row gap-2.5 items-center justify-start shrink-0 w-[120px] relative">
-      <span className="text-dark-600 text-center relative flex items-center justify-center" > {tableData.deliver_type} </span>
+      <span className="text-dark-600 text-center relative flex items-center justify-center" >
+        {(tableData.deliver_type + '').replace('_', ' ').toUpperCase()}
+      </span>
     </td>
   </tr>
 );
@@ -75,7 +83,12 @@ export default ({ createOrderIsOpen, setCreateOrderIsOpen }) => {
   // const [dialogShow, setDialogShow] = createMemo();
   // console.log(createOrderIsOpen(), setCreateOrderIsOpen);
   // const setDialogShow = (value) => setCreateOrderOoen(value)
-  const [order_list, setOrderList] = createSignal([]);
+  // const [order_list, setOrderList] = createSignal([]);
+  const [orderList, { mutate, refetch: orderListRefresh }] = createResource(1, fetchOrderList);
+  // const orderListRefresh = () => refetch()
+  // const displayOrderList = createMemo(() => (orderList() || []).filter((elm) => ['paid', 'producing', 'delivering', 'completed'].includes(elm.status)));
+  const displayOrderList = createMemo(() => (orderList() || []));
+  //  () => [orderList() || []].filter((elm) => ['producing', 'delivering', 'completed'].includes(elm.status))
   const onSearchEnter = (keyword) => { }
   const onTableRowClick = () => {
 
@@ -86,6 +99,8 @@ export default ({ createOrderIsOpen, setCreateOrderIsOpen }) => {
   createEffect(() => {
     if (createOrderIsOpen()) {
       setTabOrderIsOpen(true);
+    } else {
+      orderListRefresh()
     }
   }, createOrderIsOpen());
 
@@ -96,30 +111,15 @@ export default ({ createOrderIsOpen, setCreateOrderIsOpen }) => {
     }
   }
 
-  onMount(async() => {
-    
-    setOrderList([{
-      id: 1,
-      contact_type: "walk_in",
-      status: "completed",
-      deliver_type: "dine_in",
-      customer_name: "John Smith",
-      customer_contact: 435123434,
-      customer_address: "",
-      order_number: 1,
-      staff: "steven",
-      items: []
-    }]);
-  })
 
   return (
     <>
       <InputField onSearchEnter={onSearchEnter} />
       <OrderSearchTableContainer>
         <Suspense fallback={(<p> loading </p>)}>
-          <For each={order_list()}>
+          <For each={displayOrderList()}>
             {(order_set) => (
-              <OrderSearchTableItem tableData={order_set} onTableRowClick={onTableRowClick}/>
+              <OrderSearchTableItem tableData={order_set} onTableRowClick={onTableRowClick} />
             )}
           </For>
         </Suspense>

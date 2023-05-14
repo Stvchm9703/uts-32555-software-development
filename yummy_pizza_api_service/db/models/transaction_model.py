@@ -23,6 +23,10 @@ class PaymentType(Enum):
     paypel = "paypel"
 
 
+def convert_datetime_to_iso_8601_with_z_suffix(dt: datetime) -> str:
+    return dt.strftime('%Y-%m-%dT%H:%M:%SZ')
+
+
 class Transaction(BaseModel):
     __table_args__ = {'extend_existing': True}
     
@@ -35,6 +39,14 @@ class Transaction(BaseModel):
 
     class Meta(BaseMeta):
         tablename = "transaction"
+
+        
+    class Config:
+        json_encoders = {
+            # custom output conversion for datetime
+            datetime: convert_datetime_to_iso_8601_with_z_suffix
+        }
+
 
     def complete_payment(self, t_payment_type: PaymentType = PaymentType.cash) -> bool:
         # self.payment_type = t_payment_type

@@ -16,6 +16,7 @@ export interface Order {
   order_number?: number;
   staff?: string;
   items: OrderProduct[];
+  transaction?: any;
 }
 
 export interface Product {
@@ -55,6 +56,7 @@ export interface OrderProduct {
   quality?: number;
   extra_option?: ExtraOption[];
   remark?: string;
+  _id?: string;
 }
 
 export interface ExtraOption {

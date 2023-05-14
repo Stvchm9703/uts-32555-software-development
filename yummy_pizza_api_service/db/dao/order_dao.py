@@ -23,6 +23,7 @@ class OrderDAO:
         :return: Order
         :rtype: Order
         """
+        print(order)
         latest_order = await Order.objects.order_by("-order_number").get_or_none()
         order_num = 1
         if latest_order != None and latest_order.order_number != 999:
@@ -53,7 +54,7 @@ class OrderDAO:
         :rtype: Optional[Order]
         """
         return await Order.objects\
-            .select_all()\
+            .select_all(follow=True)\
             .order_by("-created_date")\
             .limit(limit)\
             .offset(offset)\
@@ -184,6 +185,14 @@ class OrderDAO:
         return tar
 
     async def confirm_order(self, order_id: int) -> Optional[Order]:
+        """
+        Confirms an order by updating its status to unpaid and requesting payment if the
+        current status is created. Then, loads all related fields and returns the updated order.
+        :param order_id: The ID of the order to be confirmed.
+        :type order_id: int
+        :return: The updated order if found, None otherwise.
+        :rtype: Optional[Order]
+        """
         tar = await Order.objects.get_or_none(id=order_id)
         if tar:
             if tar.status == OrderStatus.created.value:
@@ -196,7 +205,14 @@ class OrderDAO:
 
     async def request_payment_order(self, order_id: int) -> Optional[Order]:
         """
+        Requests payment for the given order ID and updates the order status to 'paid' if it
+        was previously 'unpaid'. Returns the order object, or None if the object does not exist.
 
+        :param order_id: The ID of the order to request payment for.
+        :type order_id: int
+
+        :return: The updated order object, or None if the object does not exist.
+        :rtype: Optional[Order]
         """
         tar = await Order.objects.get_or_none(id=order_id)
         if tar:
@@ -208,35 +224,50 @@ class OrderDAO:
 
     async def producing_order(self, order_id: int) -> Optional[Order]:
         """
+        Asynchronously gets an order by ID and updates its status to 'producing' if its current status is
+        'paid'. Then, loads all related objects in the order and returns it if found.
 
+        :param order_id: The ID of the order to be produced.
+        :type order_id: int
+
+        :return: The produced order object, if found. Otherwise, returns None.
+        :rtype: Optional[Order]
         """
         tar = await Order.objects.get_or_none(id=order_id)
         if tar:
             if tar.status == OrderStatus.paid.value:
                 await tar.update_status(OrderStatus.producing)
-                # 
+                #
             await tar.load_all(follow=True)
             # await tar.update()
         return tar
 
-
     async def sending_order(self, order_id: int) -> Optional[Order]:
         """
+        Sends an order with the given order_id. Returns the updated Order object after loading all related objects.
 
+        :param order_id: The ID of the order to be sent.
+        :type order_id: int
+        :return: The updated Order object after loading all related objects. None if the order with the given ID does not exist.
+        :rtype: Optional[Order]
         """
         tar = await Order.objects.get_or_none(id=order_id)
         if tar:
             if tar.status == OrderStatus.producing.value:
                 await tar.update_status(OrderStatus.delivering)
-                # 
+                #
             await tar.load_all(follow=True)
             # await tar.update()
         return tar
-    
 
     async def complete_order(self, order_id: int) -> Optional[Order]:
         """
+        Completes an order with the given order ID.
 
+        :param order_id: The ID of the order to complete.
+        :type order_id: int
+        :return: The completed order if successful, otherwise None.
+        :rtype: Optional[Order]
         """
         tar = await Order.objects.get_or_none(id=order_id)
         if tar:
@@ -264,14 +295,24 @@ class OrderDAO:
         :rtype: Order
         :raises: Exception if the provided base_order does not exist
         """
-        existed = None
-        if 'id' in base_order:
-            existed = await Order.objects.get_or_none(id=base_order['id'])
-        elif 'order_number' in base_order:
-            existed = await Order.objects.get_or_none(order_number=base_order['order_number'])
+        if 'id' not in base_order and 'order_number' not in base_order:
+            raise "request order is not single one"  # type: ignore
 
+        if base_order['id'] == None and base_order['order_number'] == None:
+            raise "request order is not single one"  # type: ignore
+
+        query = Order.objects
+
+        if base_order['id'] != None:
+            query = query.filter(Order.id == base_order['id'])
+        elif base_order['order_number'] != None:
+            query = query.filter(Order.order_number == base_order['order_number'])
+
+        existed = await query.get_or_none()
+        
         if existed is None:
             raise "request order is not single one"  # type: ignore
+            # return await Order.objects.get_or_none()  # type: ignore
 
         existed_prod = await Product.objects.get(id=input_order_option['product']['id'])
         order_prod_set = await OrderProduct.objects.create(
@@ -291,7 +332,7 @@ class OrderDAO:
         return await existed.load_all(follow=True, exclude=[
             "items__base_referance__options",
             "items__extra_options__for_order",
-            "items__extra_options__option_referance__option_for_product"
+            "items__extra_options__option_referance"
         ])
 
     async def remove_item(self, base_order: dict) -> Order:
@@ -313,8 +354,7 @@ class OrderDAO:
 
         elif base_order['order_number'] != None:
             existed = await Order.objects.get_or_none(order_number=base_order['order_number'])
-
-        if existed is None:
+        if existed == None:
             raise "request order is not single one"  # type: ignore
 
         # print(base_order['items'])
